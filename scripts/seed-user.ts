@@ -34,34 +34,40 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 async function seedUser() {
-  console.log(`Creating user: ${email}`);
+  console.log(`Syncing user: ${email}`);
 
-  const { data, error } = await supabase.auth.admin.createUser({
-    email: email as string,
-    password: password as string,
-    email_confirm: true,
-  });
+  // Always look up by email first and upsert
+  const listResult = await supabase.auth.admin.listUsers();
+  if (listResult.error) {
+    console.error("Failed to list users:", listResult.error.message);
+    process.exit(1);
+  }
 
-  if (error) {
-    if (error.message.includes("already been registered")) {
-      console.log("User already exists. Updating password...");
-      const listResult = await supabase.auth.admin.listUsers();
-      const existing = listResult.data?.users.find((u) => u.email === email);
-      if (existing) {
-        const { error: updateError } = await supabase.auth.admin.updateUserById(existing.id, {
-          password: password as string,
-        });
-        if (updateError) {
-          console.error("Failed to update password:", updateError.message);
-          process.exit(1);
-        }
-        console.log("Password updated successfully.");
-      }
-    } else {
+  const existing = listResult.data?.users.find((u) => u.email === email);
+
+  if (existing) {
+    console.log(`User already exists (id: ${existing.id}). Updating password...`);
+    const { error: updateError } = await supabase.auth.admin.updateUserById(existing.id, {
+      password: password as string,
+      email_confirm: true,
+    });
+    if (updateError) {
+      console.error("Failed to update password:", updateError.message);
+      process.exit(1);
+    }
+    console.log("Password updated successfully.");
+    console.log("  ID:", existing.id);
+    console.log("  Email:", existing.email);
+  } else {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email: email as string,
+      password: password as string,
+      email_confirm: true,
+    });
+    if (error) {
       console.error("Failed to create user:", error.message);
       process.exit(1);
     }
-  } else {
     console.log("User created successfully!");
     console.log("  ID:", data.user?.id);
     console.log("  Email:", data.user?.email);
