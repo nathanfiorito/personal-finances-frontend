@@ -24,7 +24,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="p-2 rounded-md text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 dark:text-dark-muted dark:hover:text-dark-primary dark:hover:bg-dark-surface2 transition-colors"
+      className="min-h-[44px] min-w-[44px] p-2 rounded-md text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 dark:text-dark-muted dark:hover:text-dark-primary dark:hover:bg-dark-surface2 transition-colors"
       aria-label={dark ? "Mudar para modo claro" : "Mudar para modo escuro"}
       title={dark ? "Modo claro" : "Modo escuro"}
     >

@@ -113,7 +113,7 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
       maxWidth="md"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Valor (R$)"
             type="number"
@@ -150,7 +150,7 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
           placeholder="Descrição opcional"
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
             label="Categoria"
             value={form.categoria_id ?? ""}

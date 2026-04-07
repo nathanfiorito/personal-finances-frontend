@@ -29,20 +29,20 @@ export function ExpenseFilters({ filters, categories, onChange, onReset }: Expen
         type="date"
         value={filters.start}
         onChange={(e) => update("start", e.target.value)}
-        className="w-40"
+        className="w-full sm:w-40"
       />
       <Input
         label="Data final"
         type="date"
         value={filters.end}
         onChange={(e) => update("end", e.target.value)}
-        className="w-40"
+        className="w-full sm:w-40"
       />
       <Select
         label="Categoria"
         value={filters.categoria_id}
         onChange={(e) => update("categoria_id", e.target.value)}
-        className="w-44"
+        className="w-full sm:w-44"
       >
         <option value="">Todas</option>
         {categories.map((cat) => (

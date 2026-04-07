@@ -54,7 +54,7 @@ export default function ReportsPage() {
         </div>
         {/* Year selector */}
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={prevYear} disabled={loading}>
+          <Button variant="secondary" size="sm" onClick={prevYear} disabled={loading} aria-label="Ano anterior">
             <ChevronLeft size={16} />
           </Button>
           <span className="text-lg font-bold text-neutral-900 dark:text-dark-primary w-16 text-center">
@@ -65,6 +65,7 @@ export default function ReportsPage() {
             size="sm"
             onClick={nextYear}
             disabled={loading || year >= currentYear}
+            aria-label="Próximo ano"
           >
             <ChevronRight size={16} />
           </Button>

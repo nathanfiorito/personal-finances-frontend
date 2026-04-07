@@ -175,9 +175,9 @@ export default function ExpensesPage() {
               <Download size={16} />
               <span className="hidden sm:inline">Exportar CSV</span>
             </Button>
-            <Button variant="primary" onClick={handleNewExpense}>
+            <Button variant="primary" onClick={handleNewExpense} aria-label="Nova despesa">
               <Plus size={16} />
-              <span className="hidden sm:inline">Nova despesa</span>
+              <span className="hidden sm:inline" aria-hidden="true">Nova despesa</span>
             </Button>
           </div>
         </div>

@@ -23,7 +23,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           id={inputId}
           className={`
-            bg-neutral-50 dark:bg-dark-surface2
+            min-h-[44px] bg-neutral-50 dark:bg-dark-surface2
             border border-neutral-200 dark:border-dark-border
             rounded-md text-sm
             px-3 py-2
@@ -69,7 +69,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           id={inputId}
           className={`
-            bg-neutral-50 dark:bg-dark-surface2
+            min-h-[44px] bg-neutral-50 dark:bg-dark-surface2
             border border-neutral-200 dark:border-dark-border
             rounded-md text-sm
             px-3 py-2

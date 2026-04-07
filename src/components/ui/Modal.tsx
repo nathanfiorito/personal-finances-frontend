@@ -50,7 +50,7 @@ export function Modal({ open, onClose, title, children, maxWidth = "md" }: Modal
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-dark-border">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-neutral-200 dark:border-dark-border">
           <h2 id="modal-title" className="text-lg font-semibold text-neutral-900 dark:text-dark-primary">
             {title}
           </h2>
@@ -62,7 +62,7 @@ export function Modal({ open, onClose, title, children, maxWidth = "md" }: Modal
             <X size={20} />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6">{children}</div>
       </div>
     </div>
   );

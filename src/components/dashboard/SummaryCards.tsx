@@ -17,7 +17,7 @@ function formatCurrency(value: number): string {
 export function SummaryCards({ totalMonth, transactionCount, monthLabel }: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <Card>
+      <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-neutral-500 dark:text-dark-muted">Total do mês</p>
@@ -31,7 +31,7 @@ export function SummaryCards({ totalMonth, transactionCount, monthLabel }: Summa
         </div>
       </Card>
 
-      <Card>
+      <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-neutral-500 dark:text-dark-muted">Transações</p>
@@ -45,7 +45,7 @@ export function SummaryCards({ totalMonth, transactionCount, monthLabel }: Summa
         </div>
       </Card>
 
-      <Card>
+      <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm text-neutral-500 dark:text-dark-muted">Período</p>

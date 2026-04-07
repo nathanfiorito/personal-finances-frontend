@@ -59,9 +59,85 @@ export function ExpenseTable({
     );
   }
 
+  const skeletonRows = Array.from({ length: 5 });
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-dark-border">
+
+      {/* ── Mobile card view (< sm) ───────────────────────────────────────── */}
+      <div className="block sm:hidden rounded-xl border border-neutral-200 dark:border-dark-border overflow-hidden">
+        {loading
+          ? skeletonRows.map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-col gap-2 px-4 py-3 border-b border-neutral-100 dark:border-dark-border last:border-b-0 animate-pulse"
+              >
+                <div className="flex justify-between">
+                  <div className="h-3 bg-neutral-200 dark:bg-dark-surface2 rounded w-16" />
+                  <div className="h-3 bg-neutral-200 dark:bg-dark-surface2 rounded w-20" />
+                </div>
+                <div className="h-4 bg-neutral-200 dark:bg-dark-surface2 rounded w-3/4" />
+                <div className="h-3 bg-neutral-200 dark:bg-dark-surface2 rounded w-24" />
+              </div>
+            ))
+          : expenses.map((expense) => (
+              <div
+                key={expense.id}
+                className="flex flex-col gap-1.5 px-4 py-3 border-b border-neutral-100 dark:border-dark-border last:border-b-0"
+              >
+                {/* Date + Value */}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-neutral-500 dark:text-dark-muted">
+                    {formatDate(expense.data)}
+                  </span>
+                  <span className="font-bold text-neutral-900 dark:text-dark-primary">
+                    {formatCurrency(expense.valor)}
+                  </span>
+                </div>
+
+                {/* Estabelecimento */}
+                <p className="text-sm text-neutral-900 dark:text-dark-primary truncate">
+                  {expense.estabelecimento || (
+                    <span className="text-neutral-400 dark:text-dark-muted italic">
+                      {expense.descricao || "—"}
+                    </span>
+                  )}
+                </p>
+
+                {/* Category + Actions */}
+                <div className="flex items-center justify-between mt-0.5">
+                  <span
+                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white"
+                    style={{ backgroundColor: getCategoryColor(expense.categoria) }}
+                  >
+                    {expense.categoria}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onEdit(expense)}
+                      aria-label="Editar"
+                    >
+                      <Pencil size={14} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(expense)}
+                      aria-label="Excluir"
+                      className="text-danger hover:text-danger dark:text-danger-dark"
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+      </div>
+
+      {/* ── Desktop table view (≥ sm) ─────────────────────────────────────── */}
+      <div className="hidden sm:block overflow-x-auto rounded-xl border border-neutral-200 dark:border-dark-border">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-neutral-50 dark:bg-dark-surface2 border-b border-neutral-200 dark:border-dark-border">
@@ -75,7 +151,7 @@ export function ExpenseTable({
           </thead>
           <tbody>
             {loading
-              ? Array.from({ length: 5 }).map((_, i) => (
+              ? skeletonRows.map((_, i) => (
                   <tr key={i} className="border-b border-neutral-100 dark:border-dark-border animate-pulse">
                     {Array.from({ length: 6 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">

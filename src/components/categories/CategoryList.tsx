@@ -146,17 +146,17 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
           ) : (
             <ul className="divide-y divide-neutral-100 dark:divide-dark-border">
               {active.map((cat) => (
-                <li key={cat.id} className="flex items-center justify-between px-4 py-3">
-                  <div className="flex items-center gap-3">
+                <li key={cat.id} className="flex items-center justify-between px-4 py-3 gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <span
                       className="h-3 w-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: getCategoryColor(cat.nome) }}
                     />
-                    <span className="text-sm font-medium text-neutral-900 dark:text-dark-primary">
+                    <span className="text-sm font-medium text-neutral-900 dark:text-dark-primary truncate">
                       {cat.nome}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <Button
                       variant="ghost"
                       size="sm"

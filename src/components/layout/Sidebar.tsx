@@ -91,7 +91,7 @@ export function Sidebar() {
           <ThemeToggle />
           <button
             onClick={handleSignOut}
-            className="p-2 text-neutral-500 hover:text-danger dark:text-dark-muted dark:hover:text-danger-dark transition-colors"
+            className="min-h-[44px] min-w-[44px] p-2 text-neutral-500 hover:text-danger dark:text-dark-muted dark:hover:text-danger-dark transition-colors"
             aria-label="Sair"
           >
             <LogOut size={18} />
@@ -100,7 +100,7 @@ export function Sidebar() {
       </header>
 
       {/* Mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-dark-border flex">
+      <nav data-testid="bottom-nav" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-dark-surface border-t border-neutral-200 dark:border-dark-border flex">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
