@@ -29,6 +29,7 @@ const defaultFilters = (): FilterValues => {
     start: `${year}-${month}-01`,
     end: `${year}-${month}-${String(lastDay).padStart(2, "0")}`,
     categoria_id: "",
+    transaction_type: "",
   };
 };
 
@@ -69,6 +70,7 @@ export default function ExpensesPage() {
         start: filters.start || undefined,
         end: filters.end || undefined,
         categoria_id: filters.categoria_id ? Number(filters.categoria_id) : undefined,
+        transaction_type: (filters.transaction_type as "income" | "outcome") || undefined,
         page,
         page_size: PAGE_SIZE,
       });

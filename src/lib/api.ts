@@ -12,6 +12,7 @@ export interface Expense {
   categoria_id: number | null;
   cnpj: string | null;
   tipo_entrada: string;
+  transaction_type: "income" | "outcome";
   confianca: number | null;
   created_at: string;
 }
@@ -44,6 +45,7 @@ export interface ExpenseFilters {
   start?: string;
   end?: string;
   categoria_id?: number;
+  transaction_type?: "income" | "outcome";
   page?: number;
   page_size?: number;
 }
@@ -55,6 +57,7 @@ export interface ExpenseInput {
   descricao?: string;
   categoria_id?: number;
   tipo_entrada: string;
+  transaction_type: "income" | "outcome";
 }
 
 async function getJwt(): Promise<string | null> {
@@ -117,33 +120,34 @@ export async function getExpenses(filters: ExpenseFilters = {}): Promise<Paginat
   if (filters.start) params.set("start", filters.start);
   if (filters.end) params.set("end", filters.end);
   if (filters.categoria_id !== undefined) params.set("categoria_id", String(filters.categoria_id));
+  if (filters.transaction_type) params.set("transaction_type", filters.transaction_type);
   if (filters.page !== undefined) params.set("page", String(filters.page));
   if (filters.page_size !== undefined) params.set("page_size", String(filters.page_size));
 
   const query = params.toString() ? `?${params.toString()}` : "";
-  return apiFetch<PaginatedExpenses>(`/api/expenses${query}`);
+  return apiFetch<PaginatedExpenses>(`/api/transactions${query}`);
 }
 
 export async function getExpense(id: string): Promise<Expense> {
-  return apiFetch<Expense>(`/api/expenses/${id}`);
+  return apiFetch<Expense>(`/api/transactions/${id}`);
 }
 
 export async function createExpense(data: ExpenseInput): Promise<Expense> {
-  return apiFetch<Expense>("/api/expenses", {
+  return apiFetch<Expense>("/api/transactions", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
 export async function updateExpense(id: string, data: Partial<ExpenseInput>): Promise<Expense> {
-  return apiFetch<Expense>(`/api/expenses/${id}`, {
+  return apiFetch<Expense>(`/api/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  return apiFetch<void>(`/api/expenses/${id}`, { method: "DELETE" });
+  return apiFetch<void>(`/api/transactions/${id}`, { method: "DELETE" });
 }
 
 // ─── Categories ──────────────────────────────────────────────────────────────
@@ -172,8 +176,14 @@ export async function deactivateCategory(id: number): Promise<void> {
 
 // ─── Reports ─────────────────────────────────────────────────────────────────
 
-export async function getSummary(start: string, end: string): Promise<SummaryItem[]> {
-  return apiFetch<SummaryItem[]>(`/api/reports/summary?start=${start}&end=${end}`);
+export async function getSummary(
+  start: string,
+  end: string,
+  transaction_type?: "income" | "outcome"
+): Promise<SummaryItem[]> {
+  const params = new URLSearchParams({ start, end });
+  if (transaction_type) params.set("transaction_type", transaction_type);
+  return apiFetch<SummaryItem[]>(`/api/reports/summary?${params.toString()}`);
 }
 
 export async function getMonthly(year: number): Promise<MonthlyItem[]> {

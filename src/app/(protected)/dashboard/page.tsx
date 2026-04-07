@@ -3,10 +3,17 @@ import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { CategoryPieChart } from "@/components/dashboard/CategoryPieChart";
 import { SummaryItem } from "@/lib/api";
 
-async function fetchSummary(jwt: string, start: string, end: string): Promise<SummaryItem[]> {
+async function fetchSummary(
+  jwt: string,
+  start: string,
+  end: string,
+  transaction_type?: string
+): Promise<SummaryItem[]> {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const params = new URLSearchParams({ start, end });
+  if (transaction_type) params.set("transaction_type", transaction_type);
   try {
-    const res = await fetch(`${baseUrl}/api/reports/summary?start=${start}&end=${end}`, {
+    const res = await fetch(`${baseUrl}/api/reports/summary?${params.toString()}`, {
       headers: { Authorization: `Bearer ${jwt}` },
       cache: "no-store",
     });
@@ -17,11 +24,11 @@ async function fetchSummary(jwt: string, start: string, end: string): Promise<Su
   }
 }
 
-async function fetchExpenseCount(jwt: string, start: string, end: string): Promise<number> {
+async function fetchTransactionCount(jwt: string, start: string, end: string): Promise<number> {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
     const res = await fetch(
-      `${baseUrl}/api/expenses?start=${start}&end=${end}&page=1&page_size=1`,
+      `${baseUrl}/api/transactions?start=${start}&end=${end}&page=1&page_size=1`,
       {
         headers: { Authorization: `Bearer ${jwt}` },
         cache: "no-store",
@@ -53,12 +60,14 @@ export default async function DashboardPage() {
 
   const monthLabel = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
 
-  const [summary, transactionCount] = await Promise.all([
-    fetchSummary(jwt, start, end),
-    fetchExpenseCount(jwt, start, end),
+  const [outcomeSummary, incomeSummary, transactionCount] = await Promise.all([
+    fetchSummary(jwt, start, end, "outcome"),
+    fetchSummary(jwt, start, end, "income"),
+    fetchTransactionCount(jwt, start, end),
   ]);
 
-  const totalMonth = summary.reduce((sum, item) => sum + parseFloat(item.total), 0);
+  const totalOutcome = outcomeSummary.reduce((sum, item) => sum + parseFloat(item.total), 0);
+  const totalIncome = incomeSummary.reduce((sum, item) => sum + parseFloat(item.total), 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -68,30 +77,30 @@ export default async function DashboardPage() {
       </div>
 
       <SummaryCards
-        totalMonth={totalMonth}
+        totalIncome={totalIncome}
+        totalOutcome={totalOutcome}
         transactionCount={transactionCount}
-        monthLabel={monthLabel}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryPieChart data={summary} />
+        <CategoryPieChart data={outcomeSummary} />
 
-        {/* Top categories list */}
+        {/* Top expenses list */}
         <div className="bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border rounded-xl shadow p-6">
           <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-            Maiores gastos do mês
+            Maiores despesas do mês
           </h3>
-          {summary.length === 0 ? (
+          {outcomeSummary.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
               Nenhum dado disponível para este mês
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
-              {summary
+              {outcomeSummary
                 .slice()
                 .sort((a, b) => parseFloat(b.total) - parseFloat(a.total))
                 .map((item) => {
-                  const pct = totalMonth > 0 ? (parseFloat(item.total) / totalMonth) * 100 : 0;
+                  const pct = totalOutcome > 0 ? (parseFloat(item.total) / totalOutcome) * 100 : 0;
                   return (
                     <li key={item.categoria}>
                       <div className="flex justify-between text-sm mb-1">

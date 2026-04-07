@@ -20,6 +20,11 @@ const TIPO_OPTIONS = [
   { value: "pdf", label: "PDF" },
 ];
 
+const TRANSACTION_TYPE_OPTIONS = [
+  { value: "outcome", label: "Despesa" },
+  { value: "income", label: "Receita" },
+];
+
 const DEFAULT_FORM: ExpenseInput = {
   valor: 0,
   data: new Date().toISOString().split("T")[0],
@@ -27,6 +32,7 @@ const DEFAULT_FORM: ExpenseInput = {
   descricao: "",
   categoria_id: undefined,
   tipo_entrada: "texto",
+  transaction_type: "outcome",
 };
 
 export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalProps) {
@@ -54,6 +60,7 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
           descricao: expense.descricao || "",
           categoria_id: expense.categoria_id ?? undefined,
           tipo_entrada: expense.tipo_entrada,
+          transaction_type: expense.transaction_type ?? "outcome",
         });
       } else {
         setForm(DEFAULT_FORM);
@@ -88,12 +95,13 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
         descricao: form.descricao || undefined,
       };
 
+      const tipoLabel = payload.transaction_type === "income" ? "Receita" : "Despesa";
       if (isEditing && expense) {
         await updateExpense(expense.id, payload);
-        showToast("Despesa atualizada com sucesso!", "success");
+        showToast(`${tipoLabel} atualizada com sucesso!`, "success");
       } else {
         await createExpense(payload);
-        showToast("Despesa criada com sucesso!", "success");
+        showToast(`${tipoLabel} criada com sucesso!`, "success");
       }
       onSaved();
       onClose();
@@ -105,11 +113,15 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
     }
   };
 
+  const modalTitle = isEditing
+    ? form.transaction_type === "income" ? "Editar Receita" : "Editar Despesa"
+    : form.transaction_type === "income" ? "Nova Receita" : "Nova Despesa";
+
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title={isEditing ? "Editar Despesa" : "Nova Despesa"}
+      title={modalTitle}
       maxWidth="md"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -152,6 +164,19 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
+            label="Tipo"
+            value={form.transaction_type}
+            onChange={(e) => update("transaction_type", e.target.value as "income" | "outcome")}
+            required
+          >
+            {TRANSACTION_TYPE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </Select>
+
+          <Select
             label="Categoria"
             value={form.categoria_id ?? ""}
             onChange={(e) =>
@@ -167,21 +192,21 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
                 </option>
               ))}
           </Select>
-
-          <Select
-            label="Tipo de entrada"
-            value={form.tipo_entrada}
-            onChange={(e) => update("tipo_entrada", e.target.value)}
-            error={errors.tipo_entrada}
-            required
-          >
-            {TIPO_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
         </div>
+
+        <Select
+          label="Tipo de entrada"
+          value={form.tipo_entrada}
+          onChange={(e) => update("tipo_entrada", e.target.value)}
+          error={errors.tipo_entrada}
+          required
+        >
+          {TIPO_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </Select>
 
         <div className="flex gap-3 pt-2 justify-end">
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>

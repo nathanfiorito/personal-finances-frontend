@@ -8,6 +8,7 @@ export interface FilterValues {
   start: string;
   end: string;
   categoria_id: string;
+  transaction_type: string;
 }
 
 interface ExpenseFiltersProps {
@@ -50,6 +51,16 @@ export function ExpenseFilters({ filters, categories, onChange, onReset }: Expen
             {cat.nome}
           </option>
         ))}
+      </Select>
+      <Select
+        label="Tipo"
+        value={filters.transaction_type}
+        onChange={(e) => update("transaction_type", e.target.value)}
+        className="w-full sm:w-36"
+      >
+        <option value="">Todos</option>
+        <option value="outcome">Despesa</option>
+        <option value="income">Receita</option>
       </Select>
       <Button variant="ghost" size="sm" onClick={onReset} className="self-end mb-0.5">
         Limpar filtros

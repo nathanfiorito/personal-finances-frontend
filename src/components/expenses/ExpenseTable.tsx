@@ -1,7 +1,6 @@
 "use client";
 
 import { Expense } from "@/lib/api";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { getCategoryColor } from "@/lib/chart-colors";
@@ -27,11 +26,20 @@ function formatDate(dateStr: string): string {
   return `${day}/${month}/${year}`;
 }
 
-const TIPO_LABELS: Record<string, string> = {
-  texto: "Texto",
-  imagem: "Imagem",
-  pdf: "PDF",
-};
+function TransactionTypeBadge({ type }: { type: string }) {
+  const isIncome = type === "income";
+  return (
+    <span
+      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+        isIncome
+          ? "text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-500/10"
+          : "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-500/10"
+      }`}
+    >
+      {isIncome ? "Receita" : "Despesa"}
+    </span>
+  );
+}
 
 export function ExpenseTable({
   expenses,
@@ -104,14 +112,17 @@ export function ExpenseTable({
                   )}
                 </p>
 
-                {/* Category + Actions */}
+                {/* Category + Type + Actions */}
                 <div className="flex items-center justify-between mt-0.5">
-                  <span
-                    className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white"
-                    style={{ backgroundColor: getCategoryColor(expense.categoria) }}
-                  >
-                    {expense.categoria}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white"
+                      style={{ backgroundColor: getCategoryColor(expense.categoria) }}
+                    >
+                      {expense.categoria}
+                    </span>
+                    <TransactionTypeBadge type={expense.transaction_type ?? "outcome"} />
+                  </div>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
@@ -189,9 +200,7 @@ export function ExpenseTable({
                       {formatCurrency(expense.valor)}
                     </td>
                     <td className="px-4 py-3 text-center">
-                      <Badge variant="default">
-                        {TIPO_LABELS[expense.tipo_entrada] || expense.tipo_entrada}
-                      </Badge>
+                      <TransactionTypeBadge type={expense.transaction_type ?? "outcome"} />
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
