@@ -7,7 +7,8 @@ import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { Resource } from '@opentelemetry/resources';
-import { BrowserTracerProvider, ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-web';
+import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
+import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 
 const SIGNOZ_OTLP_ENDPOINT = process.env.NEXT_PUBLIC_SIGNOZ_OTLP_ENDPOINT || 'https://signoz-otel.nathanfiorito.com.br:4318';
@@ -26,7 +27,7 @@ export function initOpenTelemetry() {
     [SemanticAttributes.SERVICE_NAME]: SERVICE_NAME,
   });
 
-  const tracerProvider = new BrowserTracerProvider({
+  const tracerProvider = new WebTracerProvider({
     resource,
   });
 
