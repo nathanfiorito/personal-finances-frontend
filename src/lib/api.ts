@@ -4,34 +4,34 @@ import { createClient } from "@/lib/supabase/client";
 
 export interface Expense {
   id: string;
-  valor: string;
-  data: string;
-  estabelecimento: string | null;
-  descricao: string | null;
-  categoria: string;
-  categoria_id: number | null;
-  cnpj: string | null;
-  tipo_entrada: string;
+  amount: string;
+  date: string;
+  establishment: string | null;
+  description: string | null;
+  category: string;
+  category_id: number | null;
+  tax_id: string | null;
+  entry_type: string;
   transaction_type: "income" | "outcome";
-  confianca: number | null;
+  confidence: number | null;
   created_at: string;
 }
 
 export interface CategoryOut {
   id: number;
-  nome: string;
-  ativo: boolean;
+  name: string;
+  is_active: boolean;
 }
 
 export interface SummaryItem {
-  categoria: string;
+  category: string;
   total: string;
 }
 
 export interface MonthlyItem {
   month: number;
   total: string;
-  by_category: { categoria: string; total: string }[];
+  by_category: { category: string; total: string }[];
 }
 
 export interface PaginatedExpenses {
@@ -44,19 +44,19 @@ export interface PaginatedExpenses {
 export interface ExpenseFilters {
   start?: string;
   end?: string;
-  categoria_id?: number;
+  category_id?: number;
   transaction_type?: "income" | "outcome";
   page?: number;
   page_size?: number;
 }
 
 export interface ExpenseInput {
-  valor: number;
-  data: string;
-  estabelecimento?: string;
-  descricao?: string;
-  categoria_id?: number;
-  tipo_entrada: string;
+  amount: number;
+  date: string;
+  establishment?: string;
+  description?: string;
+  category_id?: number;
+  entry_type: string;
   transaction_type: "income" | "outcome";
 }
 
@@ -119,7 +119,7 @@ export async function getExpenses(filters: ExpenseFilters = {}): Promise<Paginat
   const params = new URLSearchParams();
   if (filters.start) params.set("start", filters.start);
   if (filters.end) params.set("end", filters.end);
-  if (filters.categoria_id !== undefined) params.set("categoria_id", String(filters.categoria_id));
+  if (filters.category_id !== undefined) params.set("category_id", String(filters.category_id));
   if (filters.transaction_type) params.set("transaction_type", filters.transaction_type);
   if (filters.page !== undefined) params.set("page", String(filters.page));
   if (filters.page_size !== undefined) params.set("page_size", String(filters.page_size));
@@ -156,10 +156,10 @@ export async function getCategories(): Promise<CategoryOut[]> {
   return apiFetch<CategoryOut[]>("/api/categories");
 }
 
-export async function createCategory(nome: string): Promise<CategoryOut> {
+export async function createCategory(name: string): Promise<CategoryOut> {
   return apiFetch<CategoryOut>("/api/categories", {
     method: "POST",
-    body: JSON.stringify({ nome }),
+    body: JSON.stringify({ name }),
   });
 }
 
