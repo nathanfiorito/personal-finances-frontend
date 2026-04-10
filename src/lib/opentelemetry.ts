@@ -6,7 +6,7 @@
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { Resource, ResourceAttributes } from '@opentelemetry/resources';
+import { Resource } from '@opentelemetry/resources';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base';
 
@@ -23,7 +23,7 @@ export function initOpenTelemetry() {
   isInitialized = true;
 
   const resource = new Resource({
-    [ResourceAttributes.SERVICE_NAME]: SERVICE_NAME,
+    'service.name': SERVICE_NAME,
   });
 
   const tracerProvider = new WebTracerProvider({
