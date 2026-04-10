@@ -1,7 +1,7 @@
 # Spec: Personal Finances Frontend
 
 ## Objetivo
-Interface web para visualização e gerenciamento de despesas do FinBot. Consome a REST API do backend (`telegram-finances`) e usa Supabase Auth para autenticação. Acesso exclusivamente single-user — sem cadastro público; o usuário é criado via seed direto no Supabase.
+Interface web para visualização e gerenciamento de despesas do Personal Finances. Consome a REST API do backend (`telegram-finances`) e usa Supabase Auth para autenticação. Acesso exclusivamente single-user — sem cadastro público; o usuário é criado via seed direto no Supabase.
 
 ## Stack
 - **Framework:** Next.js 15 (App Router)
