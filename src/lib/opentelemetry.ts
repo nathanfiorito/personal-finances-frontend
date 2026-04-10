@@ -5,10 +5,13 @@
 
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { Resource } from '@opentelemetry/resources';
 import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base';
+import { LoggerProvider, BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
+import { logs } from '@opentelemetry/api-logs';
 
 const SIGNOZ_OTLP_ENDPOINT = process.env.NEXT_PUBLIC_SIGNOZ_OTLP_ENDPOINT || 'https://signoz-otel.nathanfiorito.com.br:4318';
 const SERVICE_NAME = 'personal-finances-frontend';
@@ -51,4 +54,13 @@ export function initOpenTelemetry() {
     tracerProvider,
     instrumentations: [],
   });
+
+  // Logs pipeline — export logs to SigNoz via OTLP HTTP
+  const loggerProvider = new LoggerProvider({ resource });
+  loggerProvider.addLogRecordProcessor(
+    new BatchLogRecordProcessor(
+      new OTLPLogExporter({ url: `${SIGNOZ_OTLP_ENDPOINT}/v1/logs` })
+    )
+  );
+  logs.setGlobalLoggerProvider(loggerProvider);
 }
