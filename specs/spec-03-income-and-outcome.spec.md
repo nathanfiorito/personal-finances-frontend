@@ -7,7 +7,7 @@ Suportar tanto receitas quanto despesas no FinBot. Atualmente o sistema registra
 
 ### Telegram (bot)
 - **Entrada:** mensagem de texto, imagem ou PDF enviada pelo usuário
-- **Saída:** mensagem de confirmação com o tipo identificado ("Receita" ou "Despesa") e botões inline para confirmar ou cancelar
+- **Saída:** mensagem de confirmação com o tipo identificado ("Income" ou "Expense") e botões inline para confirmar ou cancelar
 
 ### API
 - **GET /api/expenses** (passa a ser **/api/transactions**)
@@ -45,7 +45,7 @@ Suportar tanto receitas quanto despesas no FinBot. Atualmente o sistema registra
 6. Se não for possível determinar o tipo com confiança, o agente retorna `"outcome"` como padrão.
 
 ### Backend — Fluxo de confirmação (Telegram)
-7. A mensagem de confirmação exibe o tipo identificado: "Tipo: Receita" ou "Tipo: Despesa".
+7. The confirmation message displays the identified type: "Type: Income" or "Type: Expense".
 8. O estado pendente (`models/pending.py`) armazena o `transaction_type` junto com os demais campos.
 
 ### Backend — API
@@ -55,11 +55,11 @@ Suportar tanto receitas quanto despesas no FinBot. Atualmente o sistema registra
 12. `GET /api/reports/summary` e `GET /api/reports/monthly` passam a retornar totais separados por `transaction_type` (ou filtráveis por ele).
 
 ### Frontend
-13. A tabela de transações exibe uma coluna "Tipo" com badge visual diferenciando Receita (verde) de Despesa (vermelho).
-14. O filtro de transações inclui um seletor de tipo: Todos | Receitas | Despesas.
-15. O modal de criação/edição inclui campo obrigatório "Tipo" (select: Receita / Despesa), com padrão "Despesa".
-16. O Dashboard exibe cards separados: total de receitas, total de despesas e saldo líquido (receitas − despesas) do mês corrente.
-17. O relatório mensal exibe receitas e despesas separadas por linha ou coluna por mês.
+13. The transaction table displays a "Type" column with a visual badge differentiating Income (green) from Expense (red).
+14. The transaction filter includes a type selector: All | Income | Expenses.
+15. The creation/edit modal includes a required "Type" field (select: Income / Expense), defaulting to "Expense".
+16. The Dashboard displays separate cards: total income, total expenses, and net balance (income − expenses) for the current month.
+17. The monthly report shows income and expenses separated by row or column per month.
 
 ## Casos extremos / Erros
 
@@ -67,26 +67,26 @@ Suportar tanto receitas quanto despesas no FinBot. Atualmente o sistema registra
 - **API recebe `transaction_type` inválido** (ex: `"expense"`): retorna `422 Unprocessable Entity`.
 - **Frontend recebe registro sem `transaction_type`** (dados legados): tratar como `"outcome"` e não quebrar a renderização.
 - **Filtro `transaction_type` com valor inválido na query string:** API retorna `422`.
-- **Relatório com apenas receitas ou apenas despesas no período:** exibir os totais disponíveis; o valor ausente aparece como `R$ 0,00`.
-- **Responsividade frontend:** nenhuma alteração deve introduzir overflow horizontal em 390px; a coluna "Tipo" deve ser visível sem scroll em mobile.
+- **Report with only income or only expenses in the period:** display available totals; the missing value appears as `R$ 0,00`.
+- **Frontend responsiveness:** no change should introduce horizontal overflow at 390px; the "Type" column must be visible without scrolling on mobile.
 
 ## Critérios de Aceite
 
 - [ ] Tabela `transactions` existe no banco com a coluna `transaction_type` com constraint `CHECK IN ('income', 'outcome')` e `DEFAULT 'outcome'`
 - [ ] Registros migrados da tabela `expenses` têm `transaction_type = 'outcome'`
-- [ ] Via Telegram, mensagem de receita (ex: "Recebi R$ 500 de salário") resulta em confirmação com "Tipo: Receita"
-- [ ] Via Telegram, mensagem ambígua resulta em confirmação com "Tipo: Despesa" (padrão)
+- [ ] Via Telegram, income message (e.g., "Received R$ 500 salary") results in confirmation showing "Type: Income"
+- [ ] Via Telegram, ambiguous message results in confirmation showing "Type: Expense" (default)
 - [ ] `POST /api/transactions` sem `transaction_type` retorna 422
 - [ ] `POST /api/transactions` com `transaction_type: "income"` persiste corretamente
-- [ ] `GET /api/transactions?transaction_type=income` retorna apenas receitas
-- [ ] `GET /api/transactions?transaction_type=outcome` retorna apenas despesas
+- [ ] `GET /api/transactions?transaction_type=income` returns only income
+- [ ] `GET /api/transactions?transaction_type=outcome` returns only expenses
 - [ ] Rotas `/api/expenses/*` retornam 301 redirecionando para `/api/transactions/*`
-- [ ] Dashboard exibe total de receitas, total de despesas e saldo líquido do mês
-- [ ] Tabela de transações exibe coluna "Tipo" com badge colorido
-- [ ] Filtro por tipo na tabela funciona para Receitas, Despesas e Todos
-- [ ] Modal de criação inclui campo "Tipo" com padrão "Despesa"
-- [ ] Modal de edição exibe o tipo atual da transação
-- [ ] Relatório mensal mostra receitas e despesas separadas por mês
+- [ ] Dashboard displays total income, total expenses, and net balance for the month
+- [ ] Transaction table displays "Type" column with colored badge
+- [ ] Type filter on table works for Income, Expenses, and All
+- [ ] Creation modal includes "Type" field defaulting to "Expense"
+- [ ] Edit modal displays the current transaction type
+- [ ] Monthly report shows income and expenses separated by month
 - [ ] Nenhuma página apresenta overflow horizontal em 390px após as mudanças
 
 ## Restrições técnicas

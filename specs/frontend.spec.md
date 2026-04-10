@@ -21,17 +21,17 @@ Interface web para visualização e gerenciamento de despesas do FinBot. Consome
 - **Entrada:** nenhuma (carrega mês corrente automaticamente)
 - **Saída:** total gasto no mês, breakdown por categoria (cards + gráfico de pizza), número de transações
 
-### Despesas
-- **Entrada:** filtros opcionais (período, categoria), formulário de criação/edição
-- **Saída:** tabela paginada de despesas; modal de criação/edição; confirmação antes de excluir
+### Expenses
+- **Input:** optional filters (date range, category), creation/edit form
+- **Output:** paginated expense table; creation/edit modal; confirmation before deleting
 
 ### Relatórios
 - **Entrada:** seletor de ano
 - **Saída:** gráfico de barras com total por mês; tabela de breakdown por categoria por mês
 
-### Categorias
-- **Entrada:** formulário de criação, ações de renomear/ativar/desativar
-- **Saída:** lista de categorias com status; feedback de sucesso/erro
+### Categories
+- **Input:** creation form, rename/activate/deactivate actions
+- **Output:** category list with status; success/error feedback
 
 ## Comportamentos
 
@@ -40,13 +40,13 @@ Interface web para visualização e gerenciamento de despesas do FinBot. Consome
 3. O JWT do Supabase é enviado em todas as chamadas à API no header `Authorization: Bearer <jwt>`.
 4. Erros `401`/`403` da API redirecionam automaticamente para `/login` (token expirado ou inválido).
 5. Dashboard carrega o mês corrente por padrão; não há seletor de período nessa tela.
-6. Tabela de despesas suporta paginação (20 itens/página) e filtros por período e categoria.
-7. Criação e edição de despesas são feitas via modal (sem navegação para nova página).
-8. Exclusão de despesa exibe confirmação antes de chamar `DELETE /api/expenses/{id}`.
-9. `DELETE /api/categories/{id}` desativa a categoria — o botão deve deixar claro que é "desativar", não "excluir".
-10. Relatório mensal exibe apenas os meses com ao menos uma despesa no ano selecionado.
-11. Feedback visual (toast ou banner) para todas as operações de escrita (criar, editar, excluir).
-12. Estado de loading visível em todas as chamadas assíncronas.
+6. Expense table supports pagination (20 items/page) and filters by date range and category.
+7. Creating and editing expenses is done via modal (no navigation to a new page).
+8. Deleting an expense shows confirmation before calling `DELETE /api/expenses/{id}`.
+9. `DELETE /api/categories/{id}` deactivates the category — the button must make it clear it is "deactivate", not "delete".
+10. Monthly report displays only months with at least one expense in the selected year.
+11. Visual feedback (toast or banner) for all write operations (create, edit, delete).
+12. Loading state visible on all asynchronous API calls.
 
 ## Casos extremos / Erros
 
@@ -64,19 +64,19 @@ Interface web para visualização e gerenciamento de despesas do FinBot. Consome
 - [ ] Erro 401/403 da API redireciona para `/login`
 - [ ] Dashboard exibe total, número de transações e breakdown por categoria do mês corrente
 - [ ] Dashboard exibe gráfico de pizza com categorias
-- [ ] Tabela de despesas pagina corretamente (20 por página)
-- [ ] Filtro por período na tabela de despesas funciona
-- [ ] Filtro por categoria na tabela de despesas funciona
-- [ ] Modal de criação de despesa abre, envia `POST /api/expenses` e atualiza a lista
-- [ ] Modal de edição preenche os campos com dados existentes e envia `PUT /api/expenses/{id}`
-- [ ] Exclusão de despesa exibe confirmação e chama `DELETE /api/expenses/{id}`
-- [ ] Relatório exibe gráfico de barras com total mensal
-- [ ] Seletor de ano no relatório recarrega os dados
-- [ ] Lista de categorias mostra apenas as ativas
-- [ ] Criação de categoria com nome duplicado exibe erro
-- [ ] Botão de desativar categoria exibe confirmação e chama `DELETE /api/categories/{id}`
-- [ ] Toasts de sucesso/erro aparecem após operações de escrita
-- [ ] Loading states visíveis durante chamadas à API
+- [ ] Expense table paginates correctly (20 per page)
+- [ ] Date range filter on expense table works
+- [ ] Category filter on expense table works
+- [ ] Expense creation modal opens, sends `POST /api/expenses` and refreshes the list
+- [ ] Edit modal pre-fills fields with existing data and sends `PUT /api/expenses/{id}`
+- [ ] Deleting an expense shows confirmation and calls `DELETE /api/expenses/{id}`
+- [ ] Report displays bar chart with monthly totals
+- [ ] Year selector on report reloads the data
+- [ ] Category list shows only active ones
+- [ ] Creating a category with a duplicate name shows an error
+- [ ] Deactivate category button shows confirmation and calls `DELETE /api/categories/{id}`
+- [ ] Success/error toasts appear after write operations
+- [ ] Loading states visible during API calls
 
 ## Restrições técnicas
 

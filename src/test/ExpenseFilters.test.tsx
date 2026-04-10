@@ -36,14 +36,14 @@ vi.mock("@/components/ui/Button", () => ({
 }));
 
 const CATEGORIES: CategoryOut[] = [
-  { id: 1, nome: "Alimentação", ativo: true },
-  { id: 2, nome: "Transporte", ativo: true },
+  { id: 1, name: "Alimentação", is_active: true },
+  { id: 2, name: "Transporte", is_active: true },
 ];
 
 const DEFAULT_FILTERS: FilterValues = {
   start: "2025-03-01",
   end: "2025-03-31",
-  categoria_id: "",
+  category_id: "",
   transaction_type: "",
 };
 
@@ -115,9 +115,9 @@ describe("ExpenseFilters — transaction_type", () => {
 });
 
 describe("ExpenseFilters — existing filters still work", () => {
-  it("renders Categoria select", () => {
+  it("renders Category select", () => {
     renderFilters();
-    expect(screen.getByLabelText("Categoria")).toBeInTheDocument();
+    expect(screen.getByLabelText("Category")).toBeInTheDocument();
   });
 
   it("renders category options", () => {

@@ -69,9 +69,9 @@ describe("route paths — migrated to /api/transactions", () => {
   it("createExpense POSTs to /api/transactions", async () => {
     mockFetch(201, {});
     await createExpense({
-      valor: 50,
-      data: "2025-03-01",
-      tipo_entrada: "texto",
+      amount: 50,
+      date: "2025-03-01",
+      entry_type: "texto",
       transaction_type: "outcome",
     });
     expect(capturedUrl()).toBe("http://api.test/api/transactions");
@@ -130,7 +130,7 @@ describe("getExpenses — query params", () => {
     await getExpenses({
       start: "2025-03-01",
       end: "2025-03-31",
-      categoria_id: 2,
+      category_id: 2,
       transaction_type: "income",
       page: 2,
       page_size: 10,
@@ -138,7 +138,7 @@ describe("getExpenses — query params", () => {
     const url = capturedUrl();
     expect(url).toContain("start=2025-03-01");
     expect(url).toContain("end=2025-03-31");
-    expect(url).toContain("categoria_id=2");
+    expect(url).toContain("category_id=2");
     expect(url).toContain("transaction_type=income");
     expect(url).toContain("page=2");
     expect(url).toContain("page_size=10");
@@ -176,9 +176,9 @@ describe("HTTP methods", () => {
   it("createExpense sends POST", async () => {
     mockFetch(201, {});
     await createExpense({
-      valor: 100,
-      data: "2025-03-01",
-      tipo_entrada: "texto",
+      amount: 100,
+      date: "2025-03-01",
+      entry_type: "texto",
       transaction_type: "outcome",
     });
     const [, options] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
