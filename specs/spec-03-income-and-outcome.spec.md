@@ -1,7 +1,7 @@
 # Spec: Income and Outcome
 
 ## Objetivo
-Suportar tanto receitas quanto despesas no FinBot. Atualmente o sistema registra apenas despesas (`expenses`). Esta feature renomeia a tabela para `transactions`, adiciona o campo `transaction_type` (`income` | `outcome`), e propaga essa distinção pelo fluxo completo: extração via Telegram, API REST e frontend.
+Suportar tanto receitas quanto despesas no Personal Finances. Atualmente o sistema registra apenas despesas (`expenses`). Esta feature renomeia a tabela para `transactions`, adiciona o campo `transaction_type` (`income` | `outcome`), e propaga essa distinção pelo fluxo completo: extração via Telegram, API REST e frontend.
 
 ## Entradas / Saídas
 

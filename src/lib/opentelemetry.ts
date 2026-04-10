@@ -11,7 +11,7 @@ import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-trace-base';
 
 const SIGNOZ_OTLP_ENDPOINT = process.env.NEXT_PUBLIC_SIGNOZ_OTLP_ENDPOINT || 'https://signoz-otel.nathanfiorito.com.br:4318';
-const SERVICE_NAME = 'finbot-frontend';
+const SERVICE_NAME = 'personal-finances-frontend';
 
 let isInitialized = false;
 
