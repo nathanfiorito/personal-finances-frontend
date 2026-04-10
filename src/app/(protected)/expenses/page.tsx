@@ -28,7 +28,7 @@ const defaultFilters = (): FilterValues => {
   return {
     start: `${year}-${month}-01`,
     end: `${year}-${month}-${String(lastDay).padStart(2, "0")}`,
-    categoria_id: "",
+    category_id: "",
     transaction_type: "",
   };
 };
@@ -69,14 +69,14 @@ export default function ExpensesPage() {
       const result = await getExpenses({
         start: filters.start || undefined,
         end: filters.end || undefined,
-        categoria_id: filters.categoria_id ? Number(filters.categoria_id) : undefined,
+        category_id: filters.category_id ? Number(filters.category_id) : undefined,
         transaction_type: (filters.transaction_type as "income" | "outcome") || undefined,
         page,
         page_size: PAGE_SIZE,
       });
       setData(result);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao carregar despesas";
+      const msg = err instanceof Error ? err.message : "Error loading expenses";
       showToast(msg, "error");
     } finally {
       setLoading(false);
@@ -126,11 +126,11 @@ export default function ExpensesPage() {
     setDeleting(true);
     try {
       await deleteExpense(deleteTarget.id);
-      showToast("Despesa excluída com sucesso", "success");
+      showToast("Expense deleted successfully", "success");
       setDeleteTarget(null);
       loadExpenses();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao excluir despesa";
+      const msg = err instanceof Error ? err.message : "Error deleting expense";
       showToast(msg, "error");
     } finally {
       setDeleting(false);
@@ -147,9 +147,9 @@ export default function ExpensesPage() {
       a.download = `despesas-${filters.start}-${filters.end}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-      showToast("CSV exportado com sucesso!", "success");
+      showToast("CSV exported successfully!", "success");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao exportar CSV";
+      const msg = err instanceof Error ? err.message : "Error exporting CSV";
       showToast(msg, "error");
     } finally {
       setExporting(false);
@@ -162,9 +162,9 @@ export default function ExpensesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Despesas</h1>
+            <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Expenses</h1>
             <p className="text-sm text-neutral-500 dark:text-dark-muted mt-1">
-              Gerencie suas despesas
+              Manage your expenses
             </p>
           </div>
           <div className="flex gap-2">
@@ -172,14 +172,14 @@ export default function ExpensesPage() {
               variant="secondary"
               onClick={handleExport}
               loading={exporting}
-              title="Exportar CSV"
+              title="Export CSV"
             >
               <Download size={16} />
-              <span className="hidden sm:inline">Exportar CSV</span>
+              <span className="hidden sm:inline">Export CSV</span>
             </Button>
-            <Button variant="primary" onClick={handleNewExpense} aria-label="Nova despesa">
+            <Button variant="primary" onClick={handleNewExpense} aria-label="New expense">
               <Plus size={16} />
-              <span className="hidden sm:inline" aria-hidden="true">Nova despesa</span>
+              <span className="hidden sm:inline" aria-hidden="true">New expense</span>
             </Button>
           </div>
         </div>
@@ -217,18 +217,18 @@ export default function ExpensesPage() {
       <Modal
         open={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
-        title="Excluir Despesa"
+        title="Delete Expense"
         maxWidth="sm"
       >
         <div className="flex flex-col gap-6">
           <p className="text-sm text-neutral-600 dark:text-dark-secondary">
-            Tem certeza que deseja excluir esta despesa?
+            Are you sure you want to delete this expense?
           </p>
           {deleteTarget && (
             <div className="rounded-lg bg-danger-bg dark:bg-danger-bg-dark border border-danger/20 dark:border-danger-dark/20 px-4 py-3">
               <p className="text-sm font-medium text-danger dark:text-danger-dark">
-                {deleteTarget.estabelecimento || deleteTarget.descricao || "Sem descrição"} —{" "}
-                {parseFloat(deleteTarget.valor).toLocaleString("pt-BR", {
+                {deleteTarget.establishment || deleteTarget.description || "No description"} —{" "}
+                {parseFloat(deleteTarget.amount).toLocaleString("en-US", {
                   style: "currency",
                   currency: "BRL",
                 })}
@@ -237,10 +237,10 @@ export default function ExpensesPage() {
           )}
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={() => setDeleteTarget(null)} disabled={deleting}>
-              Cancelar
+              Cancel
             </Button>
             <Button variant="danger" onClick={handleDeleteConfirm} loading={deleting}>
-              Excluir
+              Delete
             </Button>
           </div>
         </div>
