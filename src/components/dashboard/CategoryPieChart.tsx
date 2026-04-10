@@ -44,25 +44,25 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
     return (
       <Card>
         <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-          Gastos por Categoria
+          Spending by Category
         </h3>
         <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
-          Nenhum dado disponível para este mês
+          No data available for this month
         </div>
       </Card>
     );
   }
 
   const chartData = data.map((item) => ({
-    name: item.categoria,
+    name: item.category,
     value: parseFloat(item.total),
-    color: getCategoryColor(item.categoria),
+    color: getCategoryColor(item.category),
   }));
 
   return (
     <Card>
       <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-        Gastos por Categoria
+        Spending by Category
       </h3>
       <ResponsiveContainer width="100%" height={280}>
         <PieChart>

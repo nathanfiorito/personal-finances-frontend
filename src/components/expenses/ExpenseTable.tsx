@@ -36,7 +36,7 @@ function TransactionTypeBadge({ type }: { type: string }) {
           : "text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-500/10"
       }`}
     >
-      {isIncome ? "Receita" : "Despesa"}
+      {isIncome ? "Income" : "Expense"}
     </span>
   );
 }
@@ -59,9 +59,9 @@ export function ExpenseTable({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="text-4xl mb-4">💸</div>
-        <p className="text-neutral-500 dark:text-dark-muted font-medium">Nenhuma despesa encontrada</p>
+        <p className="text-neutral-500 dark:text-dark-muted font-medium">No expenses found</p>
         <p className="text-sm text-neutral-400 dark:text-dark-muted mt-1">
-          Tente ajustar os filtros ou adicione uma nova despesa.
+          Try adjusting the filters or add a new expense.
         </p>
       </div>
     );
@@ -96,18 +96,18 @@ export function ExpenseTable({
                 {/* Date + Value */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-neutral-500 dark:text-dark-muted">
-                    {formatDate(expense.data)}
+                    {formatDate(expense.date)}
                   </span>
                   <span className="font-bold text-neutral-900 dark:text-dark-primary">
-                    {formatCurrency(expense.valor)}
+                    {formatCurrency(expense.amount)}
                   </span>
                 </div>
 
-                {/* Estabelecimento */}
+                {/* Establishment */}
                 <p className="text-sm text-neutral-900 dark:text-dark-primary truncate">
-                  {expense.estabelecimento || (
+                  {expense.establishment || (
                     <span className="text-neutral-400 dark:text-dark-muted italic">
-                      {expense.descricao || "—"}
+                      {expense.description || "—"}
                     </span>
                   )}
                 </p>
@@ -117,9 +117,9 @@ export function ExpenseTable({
                   <div className="flex items-center gap-1.5">
                     <span
                       className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium text-white"
-                      style={{ backgroundColor: getCategoryColor(expense.categoria) }}
+                      style={{ backgroundColor: getCategoryColor(expense.category) }}
                     >
-                      {expense.categoria}
+                      {expense.category}
                     </span>
                     <TransactionTypeBadge type={expense.transaction_type ?? "outcome"} />
                   </div>
@@ -128,7 +128,7 @@ export function ExpenseTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(expense)}
-                      aria-label="Editar"
+                      aria-label="Edit"
                     >
                       <Pencil size={14} />
                     </Button>
@@ -136,7 +136,7 @@ export function ExpenseTable({
                       variant="ghost"
                       size="sm"
                       onClick={() => onDelete(expense)}
-                      aria-label="Excluir"
+                      aria-label="Delete"
                       className="text-danger hover:text-danger dark:text-danger-dark"
                     >
                       <Trash2 size={14} />
@@ -152,12 +152,12 @@ export function ExpenseTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-neutral-50 dark:bg-dark-surface2 border-b border-neutral-200 dark:border-dark-border">
-              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Data</th>
-              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Estabelecimento</th>
-              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Categoria</th>
-              <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Valor</th>
-              <th className="px-4 py-3 text-center font-semibold text-neutral-600 dark:text-dark-secondary">Tipo</th>
-              <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Ações</th>
+              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Date</th>
+              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Establishment</th>
+              <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Category</th>
+              <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Amount</th>
+              <th className="px-4 py-3 text-center font-semibold text-neutral-600 dark:text-dark-secondary">Type</th>
+              <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -177,13 +177,13 @@ export function ExpenseTable({
                     className="border-b border-neutral-100 dark:border-dark-border hover:bg-neutral-50 dark:hover:bg-dark-surface2 transition-colors"
                   >
                     <td className="px-4 py-3 text-neutral-600 dark:text-dark-secondary">
-                      {formatDate(expense.data)}
+                      {formatDate(expense.date)}
                     </td>
                     <td className="px-4 py-3 text-neutral-900 dark:text-dark-primary max-w-[200px]">
                       <div className="truncate">
-                        {expense.estabelecimento || (
+                        {expense.establishment || (
                           <span className="text-neutral-400 dark:text-dark-muted italic">
-                            {expense.descricao || "—"}
+                            {expense.description || "—"}
                           </span>
                         )}
                       </div>
@@ -191,13 +191,13 @@ export function ExpenseTable({
                     <td className="px-4 py-3">
                       <span
                         className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium text-white"
-                        style={{ backgroundColor: getCategoryColor(expense.categoria) }}
+                        style={{ backgroundColor: getCategoryColor(expense.category) }}
                       >
-                        {expense.categoria}
+                        {expense.category}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right font-bold text-neutral-900 dark:text-dark-primary">
-                      {formatCurrency(expense.valor)}
+                      {formatCurrency(expense.amount)}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <TransactionTypeBadge type={expense.transaction_type ?? "outcome"} />
@@ -208,7 +208,7 @@ export function ExpenseTable({
                           variant="ghost"
                           size="sm"
                           onClick={() => onEdit(expense)}
-                          aria-label="Editar"
+                          aria-label="Edit"
                         >
                           <Pencil size={14} />
                         </Button>
@@ -216,7 +216,7 @@ export function ExpenseTable({
                           variant="ghost"
                           size="sm"
                           onClick={() => onDelete(expense)}
-                          aria-label="Excluir"
+                          aria-label="Delete"
                           className="text-danger hover:text-danger dark:text-danger-dark"
                         >
                           <Trash2 size={14} />
@@ -233,7 +233,7 @@ export function ExpenseTable({
       {total > 0 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-neutral-500 dark:text-dark-muted">
-            {loading ? "Carregando..." : `Exibindo ${start}–${end} de ${total} despesas`}
+            {loading ? "Loading..." : `Showing ${start}–${end} of ${total} expenses`}
           </p>
           <div className="flex items-center gap-1">
             <Button

@@ -11,8 +11,8 @@ interface MonthlySummaryTableProps {
 }
 
 const MONTH_NAMES = [
-  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
 ];
 
 function formatCurrency(value: string | number): string {
@@ -27,7 +27,7 @@ export function MonthlySummaryTable({ data }: MonthlySummaryTableProps) {
     return (
       <Card>
         <p className="text-sm text-neutral-400 dark:text-dark-muted text-center py-8">
-          Nenhum dado para exibir
+          No data to display
         </p>
       </Card>
     );
@@ -40,7 +40,7 @@ export function MonthlySummaryTable({ data }: MonthlySummaryTableProps) {
   return (
     <Card padding={false}>
       <div className="p-4 border-b border-neutral-200 dark:border-dark-border">
-        <h3 className="font-semibold text-neutral-900 dark:text-dark-primary">Detalhamento por Mês</h3>
+        <h3 className="font-semibold text-neutral-900 dark:text-dark-primary">Breakdown by Month</h3>
       </div>
       <div className="divide-y divide-neutral-100 dark:divide-dark-border">
         {data.map((item) => {
@@ -74,15 +74,15 @@ export function MonthlySummaryTable({ data }: MonthlySummaryTableProps) {
                         .slice()
                         .sort((a, b) => parseFloat(b.total) - parseFloat(a.total))
                         .map((cat) => (
-                          <tr key={cat.categoria} className="border-t border-neutral-100 dark:border-dark-border">
+                          <tr key={cat.category} className="border-t border-neutral-100 dark:border-dark-border">
                             <td className="py-2 pl-6">
                               <div className="flex items-center gap-2">
                                 <span
                                   className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-                                  style={{ backgroundColor: getCategoryColor(cat.categoria) }}
+                                  style={{ backgroundColor: getCategoryColor(cat.category) }}
                                 />
                                 <span className="text-neutral-600 dark:text-dark-secondary">
-                                  {cat.categoria}
+                                  {cat.category}
                                 </span>
                               </div>
                             </td>
@@ -101,7 +101,7 @@ export function MonthlySummaryTable({ data }: MonthlySummaryTableProps) {
       </div>
       {/* Year total */}
       <div className="p-4 border-t border-neutral-200 dark:border-dark-border flex justify-between items-center bg-neutral-50 dark:bg-dark-surface2 rounded-b-xl">
-        <span className="text-sm font-semibold text-neutral-700 dark:text-dark-secondary">Total do ano</span>
+        <span className="text-sm font-semibold text-neutral-700 dark:text-dark-secondary">Year total</span>
         <span className="text-base font-bold text-neutral-900 dark:text-dark-primary">
           {formatCurrency(
             data.reduce((sum, item) => sum + parseFloat(item.total), 0)

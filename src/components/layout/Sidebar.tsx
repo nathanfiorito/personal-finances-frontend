@@ -16,9 +16,9 @@ import { useToast } from "@/hooks/useToast";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/expenses", label: "Despesas", icon: CreditCard },
-  { href: "/reports", label: "Relatórios", icon: BarChart3 },
-  { href: "/categories", label: "Categorias", icon: Tag },
+  { href: "/expenses", label: "Expenses", icon: CreditCard },
+  { href: "/reports", label: "Reports", icon: BarChart3 },
+  { href: "/categories", label: "Categories", icon: Tag },
 ];
 
 export function Sidebar() {
@@ -30,7 +30,7 @@ export function Sidebar() {
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();
     if (error) {
-      showToast("Erro ao sair. Tente novamente.", "error");
+      showToast("Error signing out. Try again.", "error");
       return;
     }
     router.push("/login");
@@ -44,7 +44,7 @@ export function Sidebar() {
           <div className="flex items-center gap-2">
             <Wallet className="text-brand-500" size={24} />
             <span className="text-lg font-bold text-neutral-900 dark:text-dark-primary">
-              Finanças
+              Finances
             </span>
           </div>
         </div>
@@ -75,7 +75,7 @@ export function Sidebar() {
             className="flex items-center gap-2 text-sm text-neutral-500 hover:text-danger dark:text-dark-muted dark:hover:text-danger-dark transition-colors"
           >
             <LogOut size={16} />
-            Sair
+            Sign out
           </button>
           <ThemeToggle />
         </div>
@@ -85,14 +85,14 @@ export function Sidebar() {
       <header className="md:hidden flex items-center justify-between px-4 py-3 bg-white dark:bg-dark-surface border-b border-neutral-200 dark:border-dark-border">
         <div className="flex items-center gap-2">
           <Wallet className="text-brand-500" size={20} />
-          <span className="font-bold text-neutral-900 dark:text-dark-primary">Finanças</span>
+          <span className="font-bold text-neutral-900 dark:text-dark-primary">Finances</span>
         </div>
         <div className="flex items-center gap-1">
           <ThemeToggle />
           <button
             onClick={handleSignOut}
             className="min-h-[44px] min-w-[44px] p-2 text-neutral-500 hover:text-danger dark:text-dark-muted dark:hover:text-danger-dark transition-colors"
-            aria-label="Sair"
+            aria-label="Sign out"
           >
             <LogOut size={18} />
           </button>

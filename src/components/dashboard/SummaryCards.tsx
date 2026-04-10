@@ -15,14 +15,14 @@ function formatCurrency(value: number): string {
 }
 
 export function SummaryCards({ totalIncome, totalOutcome, transactionCount }: SummaryCardsProps) {
-  const saldo = totalIncome - totalOutcome;
+  const balance = totalIncome - totalOutcome;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Receitas</p>
+            <p className="text-sm text-neutral-500 dark:text-dark-muted">Income</p>
             <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
               {formatCurrency(totalIncome)}
             </p>
@@ -36,7 +36,7 @@ export function SummaryCards({ totalIncome, totalOutcome, transactionCount }: Su
       <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Despesas</p>
+            <p className="text-sm text-neutral-500 dark:text-dark-muted">Expenses</p>
             <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
               {formatCurrency(totalOutcome)}
             </p>
@@ -50,25 +50,25 @@ export function SummaryCards({ totalIncome, totalOutcome, transactionCount }: Su
       <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Saldo</p>
+            <p className="text-sm text-neutral-500 dark:text-dark-muted">Balance</p>
             <p
               className={`mt-1 text-2xl font-bold ${
-                saldo >= 0
+                balance >= 0
                   ? "text-green-600 dark:text-green-400"
                   : "text-red-600 dark:text-red-400"
               }`}
             >
-              {formatCurrency(saldo)}
+              {formatCurrency(balance)}
             </p>
           </div>
           <div
             className={`p-2 rounded-lg ${
-              saldo >= 0
+              balance >= 0
                 ? "bg-green-50 dark:bg-green-500/10"
                 : "bg-red-50 dark:bg-red-500/10"
             }`}
           >
-            {saldo >= 0 ? (
+            {balance >= 0 ? (
               <TrendingUp className="text-green-600 dark:text-green-400" size={20} />
             ) : (
               <TrendingDown className="text-red-600 dark:text-red-400" size={20} />
@@ -80,7 +80,7 @@ export function SummaryCards({ totalIncome, totalOutcome, transactionCount }: Su
       <Card data-testid="summary-card">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Transações</p>
+            <p className="text-sm text-neutral-500 dark:text-dark-muted">Transactions</p>
             <p className="mt-1 text-2xl font-bold text-neutral-900 dark:text-dark-primary">
               {transactionCount}
             </p>

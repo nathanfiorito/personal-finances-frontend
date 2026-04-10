@@ -57,7 +57,7 @@ export function Modal({ open, onClose, title, children, maxWidth = "md" }: Modal
           <button
             onClick={onClose}
             className="p-1 rounded-md text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 dark:hover:bg-dark-surface2 dark:hover:text-dark-secondary transition-colors"
-            aria-label="Fechar"
+            aria-label="Close"
           >
             <X size={20} />
           </button>
