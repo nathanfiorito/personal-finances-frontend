@@ -13,7 +13,7 @@ import { SimpleSpanProcessor, ConsoleSpanExporter } from '@opentelemetry/sdk-tra
 import { LoggerProvider, BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { logs } from '@opentelemetry/api-logs';
 
-const SIGNOZ_OTLP_ENDPOINT = process.env.NEXT_PUBLIC_SIGNOZ_OTLP_ENDPOINT || 'https://signoz-otel.nathanfiorito.com.br:4318';
+const SIGNOZ_OTLP_ENDPOINT = process.env.NEXT_PUBLIC_SIGNOZ_OTLP_ENDPOINT || 'https://signoz-otel.nathanfiorito.com.br';
 const SERVICE_NAME = 'personal-finances-frontend';
 
 let isInitialized = false;
