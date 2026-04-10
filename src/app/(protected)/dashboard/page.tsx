@@ -58,7 +58,7 @@ export default async function DashboardPage() {
   const lastDay = new Date(year, now.getMonth() + 1, 0).getDate();
   const end = `${year}-${month}-${String(lastDay).padStart(2, "0")}`;
 
-  const monthLabel = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const monthLabel = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   const [outcomeSummary, incomeSummary, transactionCount] = await Promise.all([
     fetchSummary(jwt, start, end, "outcome"),
@@ -88,11 +88,11 @@ export default async function DashboardPage() {
         {/* Top expenses list */}
         <div className="bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border rounded-xl shadow p-6">
           <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-            Maiores despesas do mês
+            Top expenses this month
           </h3>
           {outcomeSummary.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
-              Nenhum dado disponível para este mês
+              No data available for this month
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
@@ -102,13 +102,13 @@ export default async function DashboardPage() {
                 .map((item) => {
                   const pct = totalOutcome > 0 ? (parseFloat(item.total) / totalOutcome) * 100 : 0;
                   return (
-                    <li key={item.categoria}>
+                    <li key={item.category}>
                       <div className="flex justify-between text-sm mb-1">
                         <span className="text-neutral-700 dark:text-dark-secondary font-medium">
-                          {item.categoria}
+                          {item.category}
                         </span>
                         <span className="font-bold text-neutral-900 dark:text-dark-primary">
-                          {parseFloat(item.total).toLocaleString("pt-BR", {
+                          {parseFloat(item.total).toLocaleString("en-US", {
                             style: "currency",
                             currency: "BRL",
                           })}

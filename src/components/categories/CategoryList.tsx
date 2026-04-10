@@ -40,21 +40,21 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!createName.trim()) {
-      setCreateError("Informe um nome para a categoria");
+      setCreateError("Enter a name for the category");
       return;
     }
     setCreating(true);
     try {
       const newCat = await createCategory(createName.trim());
       setCategories((prev) => [...prev, newCat]);
-      showToast(`Categoria "${newCat.nome}" criada com sucesso!`, "success");
+      showToast(`Category "${newCat.name}" created successfully!`, "success");
       setCreateOpen(false);
       setCreateName("");
       setCreateError("");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao criar categoria";
+      const msg = err instanceof Error ? err.message : "Error creating category";
       if (msg.toLowerCase().includes("409") || msg.toLowerCase().includes("duplicado") || msg.toLowerCase().includes("already")) {
-        setCreateError("Já existe uma categoria com este nome");
+        setCreateError("A category with this name already exists");
       } else {
         setCreateError(msg);
       }
@@ -67,7 +67,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
 
   const openRename = (cat: CategoryOut) => {
     setRenameTarget(cat);
-    setRenameName(cat.nome);
+    setRenameName(cat.name);
     setRenameError("");
   };
 
@@ -75,19 +75,19 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
     e.preventDefault();
     if (!renameTarget) return;
     if (!renameName.trim()) {
-      setRenameError("Informe um nome para a categoria");
+      setRenameError("Enter a name for the category");
       return;
     }
     setRenaming(true);
     try {
-      const updated = await updateCategory(renameTarget.id, { nome: renameName.trim() });
+      const updated = await updateCategory(renameTarget.id, { name: renameName.trim() });
       setCategories((prev) =>
         prev.map((c) => (c.id === updated.id ? updated : c))
       );
-      showToast(`Categoria renomeada para "${updated.nome}"`, "success");
+      showToast(`Category renamed to "${updated.name}"`, "success");
       setRenameTarget(null);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao renomear categoria";
+      const msg = err instanceof Error ? err.message : "Error renaming category";
       setRenameError(msg);
     } finally {
       setRenaming(false);
@@ -103,21 +103,21 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
       await deactivateCategory(deactivateTarget.id);
       setCategories((prev) =>
         prev.map((c) =>
-          c.id === deactivateTarget.id ? { ...c, ativo: false } : c
+          c.id === deactivateTarget.id ? { ...c, is_active: false } : c
         )
       );
-      showToast(`Categoria "${deactivateTarget.nome}" desativada`, "success");
+      showToast(`Category "${deactivateTarget.name}" deactivated`, "success");
       setDeactivateTarget(null);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao desativar categoria";
+      const msg = err instanceof Error ? err.message : "Error deactivating category";
       showToast(msg, "error");
     } finally {
       setDeactivating(false);
     }
   };
 
-  const active = categories.filter((c) => c.ativo);
-  const inactive = categories.filter((c) => !c.ativo);
+  const active = categories.filter((c) => c.is_active);
+  const inactive = categories.filter((c) => !c.is_active);
 
   return (
     <>
@@ -125,23 +125,23 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-sm font-medium text-neutral-500 dark:text-dark-muted">
-              {active.length} ativas · {inactive.length} inativas
+              {active.length} active · {inactive.length} inactive
             </h2>
           </div>
           <Button variant="primary" onClick={() => setCreateOpen(true)}>
             <Plus size={16} />
-            Nova categoria
+            New category
           </Button>
         </div>
 
         {/* Active categories */}
         <Card padding={false}>
           <div className="p-4 border-b border-neutral-200 dark:border-dark-border">
-            <h3 className="font-semibold text-neutral-900 dark:text-dark-primary">Categorias ativas</h3>
+            <h3 className="font-semibold text-neutral-900 dark:text-dark-primary">Active categories</h3>
           </div>
           {active.length === 0 ? (
             <div className="py-12 text-center text-neutral-400 dark:text-dark-muted text-sm">
-              Nenhuma categoria ativa
+              No active categories
             </div>
           ) : (
             <ul className="divide-y divide-neutral-100 dark:divide-dark-border">
@@ -150,10 +150,10 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                   <div className="flex items-center gap-3 min-w-0">
                     <span
                       className="h-3 w-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: getCategoryColor(cat.nome) }}
+                      style={{ backgroundColor: getCategoryColor(cat.name) }}
                     />
                     <span className="text-sm font-medium text-neutral-900 dark:text-dark-primary truncate">
-                      {cat.nome}
+                      {cat.name}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
@@ -161,10 +161,10 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => openRename(cat)}
-                      aria-label={`Renomear ${cat.nome}`}
+                      aria-label={`Rename ${cat.name}`}
                     >
                       <Pencil size={14} />
-                      Renomear
+                      Rename
                     </Button>
                     <Button
                       variant="ghost"
@@ -172,7 +172,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                       onClick={() => setDeactivateTarget(cat)}
                       className="text-danger dark:text-danger-dark hover:bg-danger-bg dark:hover:bg-danger-bg-dark"
                     >
-                      Desativar
+                      Deactivate
                     </Button>
                   </div>
                 </li>
@@ -185,7 +185,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
         {inactive.length > 0 && (
           <Card padding={false}>
             <div className="p-4 border-b border-neutral-200 dark:border-dark-border">
-              <h3 className="font-semibold text-neutral-500 dark:text-dark-muted">Categorias inativas</h3>
+              <h3 className="font-semibold text-neutral-500 dark:text-dark-muted">Inactive categories</h3>
             </div>
             <ul className="divide-y divide-neutral-100 dark:divide-dark-border">
               {inactive.map((cat) => (
@@ -193,10 +193,10 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                   <div className="flex items-center gap-3">
                     <span className="h-3 w-3 rounded-full bg-neutral-300 dark:bg-dark-border flex-shrink-0" />
                     <span className="text-sm text-neutral-500 dark:text-dark-muted line-through">
-                      {cat.nome}
+                      {cat.name}
                     </span>
                   </div>
-                  <Badge variant="default">Inativa</Badge>
+                  <Badge variant="default">Inactive</Badge>
                 </li>
               ))}
             </ul>
@@ -205,33 +205,33 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
       </div>
 
       {/* Create Modal */}
-      <Modal open={createOpen} onClose={() => { setCreateOpen(false); setCreateName(""); setCreateError(""); }} title="Nova Categoria">
+      <Modal open={createOpen} onClose={() => { setCreateOpen(false); setCreateName(""); setCreateError(""); }} title="New Category">
         <form onSubmit={handleCreate} className="flex flex-col gap-4">
           <Input
-            label="Nome da categoria"
+            label="Category name"
             type="text"
             value={createName}
             onChange={(e) => { setCreateName(e.target.value); setCreateError(""); }}
             error={createError}
-            placeholder="Ex: Investimentos"
+            placeholder="E.g.: Investments"
             autoFocus
           />
           <div className="flex gap-3 justify-end">
             <Button type="button" variant="secondary" onClick={() => { setCreateOpen(false); setCreateName(""); setCreateError(""); }} disabled={creating}>
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" variant="primary" loading={creating}>
-              Criar categoria
+              Create category
             </Button>
           </div>
         </form>
       </Modal>
 
       {/* Rename Modal */}
-      <Modal open={Boolean(renameTarget)} onClose={() => setRenameTarget(null)} title="Renomear Categoria">
+      <Modal open={Boolean(renameTarget)} onClose={() => setRenameTarget(null)} title="Rename Category">
         <form onSubmit={handleRename} className="flex flex-col gap-4">
           <Input
-            label="Novo nome"
+            label="New name"
             type="text"
             value={renameName}
             onChange={(e) => { setRenameName(e.target.value); setRenameError(""); }}
@@ -240,31 +240,31 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
           />
           <div className="flex gap-3 justify-end">
             <Button type="button" variant="secondary" onClick={() => setRenameTarget(null)} disabled={renaming}>
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" variant="primary" loading={renaming}>
-              Salvar
+              Save
             </Button>
           </div>
         </form>
       </Modal>
 
       {/* Deactivate Confirm Modal */}
-      <Modal open={Boolean(deactivateTarget)} onClose={() => setDeactivateTarget(null)} title="Desativar Categoria">
+      <Modal open={Boolean(deactivateTarget)} onClose={() => setDeactivateTarget(null)} title="Deactivate Category">
         <div className="flex flex-col gap-6">
           <p className="text-sm text-neutral-600 dark:text-dark-secondary">
-            Tem certeza que deseja desativar a categoria{" "}
+            Are you sure you want to deactivate the category{" "}
             <strong className="text-neutral-900 dark:text-dark-primary">
-              &ldquo;{deactivateTarget?.nome}&rdquo;
+              &ldquo;{deactivateTarget?.name}&rdquo;
             </strong>
-            ? Ela não aparecerá mais nas opções de novas despesas.
+            ? It will no longer appear in new expense options.
           </p>
           <div className="flex gap-3 justify-end">
             <Button variant="secondary" onClick={() => setDeactivateTarget(null)} disabled={deactivating}>
-              Cancelar
+              Cancel
             </Button>
             <Button variant="danger" onClick={handleDeactivate} loading={deactivating}>
-              Desativar
+              Deactivate
             </Button>
           </div>
         </div>

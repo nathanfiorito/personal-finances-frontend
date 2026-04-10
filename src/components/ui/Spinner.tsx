@@ -14,7 +14,7 @@ export function Spinner({ size = "md", className = "" }: SpinnerProps) {
     <div
       className={`animate-spin rounded-full border-current border-t-transparent ${sizes[size]} ${className}`}
       role="status"
-      aria-label="Carregando..."
+      aria-label="Loading..."
     />
   );
 }

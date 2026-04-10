@@ -26,7 +26,7 @@ export default function LoginPage() {
     });
 
     if (authError) {
-      setError("Email ou senha inválidos. Tente novamente.");
+      setError("Invalid email or password. Try again.");
       setLoading(false);
       return;
     }
@@ -43,9 +43,9 @@ export default function LoginPage() {
           <div className="flex items-center justify-center h-14 w-14 bg-brand-500 rounded-2xl shadow-md mb-4">
             <Wallet className="text-white" size={28} />
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Finanças Pessoais</h1>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Personal Finances</h1>
           <p className="text-sm text-neutral-500 dark:text-dark-muted mt-1">
-            Faça login para acessar seu painel
+            Sign in to access your dashboard
           </p>
         </div>
 
@@ -63,7 +63,7 @@ export default function LoginPage() {
               autoFocus
             />
             <Input
-              label="Senha"
+              label="Password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -79,7 +79,7 @@ export default function LoginPage() {
             )}
 
             <Button type="submit" variant="primary" loading={loading} className="w-full mt-2">
-              Entrar
+              Sign in
             </Button>
           </form>
         </div>

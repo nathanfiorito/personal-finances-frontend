@@ -9,27 +9,27 @@ Tornar a aplicação totalmente responsiva em dispositivos mobile. O objetivo é
 
 ## Comportamentos
 1. **Navegação mobile** — Revisar top bar e bottom nav existentes; garantir que todos os itens de navegação estejam presentes e funcionais
-2. **Tabela de despesas** — Substituir ou adaptar a tabela atual para mobile (cards empilhados ou scroll horizontal controlado), garantindo legibilidade das informações principais
-3. **Filtros de despesas** — Revisar layout dos inputs, selects e botões de filtro para que sejam utilizáveis em telas pequenas
-4. **Modal de despesa** — Revisar formulário interno para não ultrapassar as bordas da tela e manter campos com tamanho adequado para toque
+2. **Expense table** — Replace or adapt the current table for mobile (stacked cards or controlled horizontal scroll), ensuring readability of the main information
+3. **Expense filters** — Review layout of inputs, selects, and filter buttons to be usable on small screens
+4. **Expense modal** — Review internal form to not exceed screen edges and keep fields with adequate touch size
 5. **Dashboard** — Confirmar que cards de resumo e gráfico de pizza não apresentam quebras visuais; ajustar se necessário
 6. **Relatórios** — Adaptar tabela de resumo mensal e gráfico de barras para mobile; revisar altura fixa do gráfico
 7. **Página de categorias** — Revisar lista de categorias e botões de ação para mobile
 8. **Componentização** — Antes dos ajustes pontuais nas páginas, extrair partes repetidas em componentes reutilizáveis já responsivos
 
 ## Casos extremos / Erros
-- Textos longos (nomes de estabelecimentos, descrições) devem ser truncados com ellipsis e não quebrar o layout
-- Tabelas com muitas colunas devem ter scroll horizontal controlado ou ocultação de colunas secundárias em mobile
+- Long texts (establishment names, descriptions) must be truncated with ellipsis and not break the layout
+- Tables with many columns must have controlled horizontal scroll or hide secondary columns on mobile
 - Referência de viewport mínima: 390px (iPhone 16); não é necessário suportar telas abaixo disso
 
 ## Critérios de Aceite
-- [ ] Todas as páginas renderizam sem overflow horizontal em 390px de largura (iPhone 16)
-- [ ] A tabela de despesas é legível e utilizável em mobile
-- [ ] Textos longos são truncados com ellipsis e não quebram o layout
-- [ ] Filtros, formulários e modais são utilizáveis com toque (campos com tamanho adequado)
-- [ ] Navegação mobile funciona corretamente em todas as páginas
-- [ ] Gráficos se redimensionam corretamente sem corte ou overflow
-- [ ] Não há regressões no layout desktop após as mudanças
+- [ ] All pages render without horizontal overflow at 390px width (iPhone 16)
+- [ ] The expense table is readable and usable on mobile
+- [ ] Long texts are truncated with ellipsis and do not break the layout
+- [ ] Filters, forms, and modals are usable with touch (fields with adequate size)
+- [ ] Mobile navigation works correctly on all pages
+- [ ] Charts resize correctly without clipping or overflow
+- [ ] No regressions in desktop layout after the changes
 
 ## Restrições técnicas
 - Framework: Next.js (App Router) + Tailwind CSS + TypeScript

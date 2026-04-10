@@ -15,23 +15,23 @@ interface ExpenseModalProps {
 }
 
 const TIPO_OPTIONS = [
-  { value: "texto", label: "Texto" },
-  { value: "imagem", label: "Imagem" },
+  { value: "texto", label: "Text" },
+  { value: "imagem", label: "Image" },
   { value: "pdf", label: "PDF" },
 ];
 
 const TRANSACTION_TYPE_OPTIONS = [
-  { value: "outcome", label: "Despesa" },
-  { value: "income", label: "Receita" },
+  { value: "outcome", label: "Expense" },
+  { value: "income", label: "Income" },
 ];
 
 const DEFAULT_FORM: ExpenseInput = {
-  valor: 0,
-  data: new Date().toISOString().split("T")[0],
-  estabelecimento: "",
-  descricao: "",
-  categoria_id: undefined,
-  tipo_entrada: "texto",
+  amount: 0,
+  date: new Date().toISOString().split("T")[0],
+  establishment: "",
+  description: "",
+  category_id: undefined,
+  entry_type: "texto",
   transaction_type: "outcome",
 };
 
@@ -54,12 +54,12 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
     if (open) {
       if (expense) {
         setForm({
-          valor: parseFloat(expense.valor),
-          data: expense.data,
-          estabelecimento: expense.estabelecimento || "",
-          descricao: expense.descricao || "",
-          categoria_id: expense.categoria_id ?? undefined,
-          tipo_entrada: expense.tipo_entrada,
+          amount: parseFloat(expense.amount),
+          date: expense.date,
+          establishment: expense.establishment || "",
+          description: expense.description || "",
+          category_id: expense.category_id ?? undefined,
+          entry_type: expense.entry_type,
           transaction_type: expense.transaction_type ?? "outcome",
         });
       } else {
@@ -76,9 +76,9 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
 
   const validate = (): boolean => {
     const errs: Partial<Record<keyof ExpenseInput, string>> = {};
-    if (!form.valor || form.valor <= 0) errs.valor = "Informe um valor maior que zero";
-    if (!form.data) errs.data = "Informe a data";
-    if (!form.tipo_entrada) errs.tipo_entrada = "Selecione o tipo";
+    if (!form.amount || form.amount <= 0) errs.amount = "Enter an amount greater than zero";
+    if (!form.date) errs.date = "Enter the date";
+    if (!form.entry_type) errs.entry_type = "Select the type";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -91,22 +91,22 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
     try {
       const payload: ExpenseInput = {
         ...form,
-        estabelecimento: form.estabelecimento || undefined,
-        descricao: form.descricao || undefined,
+        establishment: form.establishment || undefined,
+        description: form.description || undefined,
       };
 
-      const tipoLabel = payload.transaction_type === "income" ? "Receita" : "Despesa";
+      const typeLabel = payload.transaction_type === "income" ? "Income" : "Expense";
       if (isEditing && expense) {
         await updateExpense(expense.id, payload);
-        showToast(`${tipoLabel} atualizada com sucesso!`, "success");
+        showToast(`${typeLabel} updated successfully!`, "success");
       } else {
         await createExpense(payload);
-        showToast(`${tipoLabel} criada com sucesso!`, "success");
+        showToast(`${typeLabel} created successfully!`, "success");
       }
       onSaved();
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Erro ao salvar despesa";
+      const msg = err instanceof Error ? err.message : "Error saving expense";
       showToast(msg, "error");
     } finally {
       setSaving(false);
@@ -114,8 +114,8 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
   };
 
   const modalTitle = isEditing
-    ? form.transaction_type === "income" ? "Editar Receita" : "Editar Despesa"
-    : form.transaction_type === "income" ? "Nova Receita" : "Nova Despesa";
+    ? form.transaction_type === "income" ? "Edit Income" : "Edit Expense"
+    : form.transaction_type === "income" ? "New Income" : "New Expense";
 
   return (
     <Modal
@@ -127,44 +127,44 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="Valor (R$)"
+            label="Amount (R$)"
             type="number"
             step="0.01"
             min="0.01"
-            value={form.valor || ""}
-            onChange={(e) => update("valor", parseFloat(e.target.value) || 0)}
-            error={errors.valor}
+            value={form.amount || ""}
+            onChange={(e) => update("amount", parseFloat(e.target.value) || 0)}
+            error={errors.amount}
             required
           />
           <Input
-            label="Data"
+            label="Date"
             type="date"
-            value={form.data}
-            onChange={(e) => update("data", e.target.value)}
-            error={errors.data}
+            value={form.date}
+            onChange={(e) => update("date", e.target.value)}
+            error={errors.date}
             required
           />
         </div>
 
         <Input
-          label="Estabelecimento"
+          label="Establishment"
           type="text"
-          value={form.estabelecimento}
-          onChange={(e) => update("estabelecimento", e.target.value)}
-          placeholder="Ex: Supermercado Pão de Açúcar"
+          value={form.establishment}
+          onChange={(e) => update("establishment", e.target.value)}
+          placeholder="E.g.: Grocery Store"
         />
 
         <Input
-          label="Descrição"
+          label="Description"
           type="text"
-          value={form.descricao}
-          onChange={(e) => update("descricao", e.target.value)}
-          placeholder="Descrição opcional"
+          value={form.description}
+          onChange={(e) => update("description", e.target.value)}
+          placeholder="Optional description"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
-            label="Tipo"
+            label="Type"
             value={form.transaction_type}
             onChange={(e) => update("transaction_type", e.target.value as "income" | "outcome")}
             required
@@ -177,28 +177,28 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
           </Select>
 
           <Select
-            label="Categoria"
-            value={form.categoria_id ?? ""}
+            label="Category"
+            value={form.category_id ?? ""}
             onChange={(e) =>
-              update("categoria_id", e.target.value ? Number(e.target.value) : undefined)
+              update("category_id", e.target.value ? Number(e.target.value) : undefined)
             }
           >
-            <option value="">Sem categoria</option>
+            <option value="">No category</option>
             {categories
-              .filter((c) => c.ativo)
+              .filter((c) => c.is_active)
               .map((cat) => (
                 <option key={cat.id} value={cat.id}>
-                  {cat.nome}
+                  {cat.name}
                 </option>
               ))}
           </Select>
         </div>
 
         <Select
-          label="Tipo de entrada"
-          value={form.tipo_entrada}
-          onChange={(e) => update("tipo_entrada", e.target.value)}
-          error={errors.tipo_entrada}
+          label="Entry type"
+          value={form.entry_type}
+          onChange={(e) => update("entry_type", e.target.value)}
+          error={errors.entry_type}
           required
         >
           {TIPO_OPTIONS.map((opt) => (
@@ -210,10 +210,10 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
 
         <div className="flex gap-3 pt-2 justify-end">
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
-            Cancelar
+            Cancel
           </Button>
           <Button type="submit" variant="primary" loading={saving}>
-            {isEditing ? "Salvar alterações" : "Criar despesa"}
+            {isEditing ? "Save changes" : "Create expense"}
           </Button>
         </div>
       </form>

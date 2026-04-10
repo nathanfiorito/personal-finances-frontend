@@ -1,14 +1,14 @@
 export const CATEGORY_COLORS: Record<string, string> = {
-  Alimentação: "#F97316",
-  Transporte: "#3B82F6",
-  Moradia: "#8B5CF6",
-  Saúde: "#EF4444",
-  Educação: "#06B6D4",
-  Lazer: "#F59E0B",
-  Vestuário: "#EC4899",
-  Serviços: "#6B7280",
+  Food: "#F97316",
+  Transport: "#3B82F6",
+  Housing: "#8B5CF6",
+  Health: "#EF4444",
+  Education: "#06B6D4",
+  Entertainment: "#F59E0B",
+  Clothing: "#EC4899",
+  Services: "#6B7280",
   Pets: "#10B981",
-  Outros: "#A3A3A3",
+  Others: "#A3A3A3",
 };
 
 const FALLBACK_COLORS = [

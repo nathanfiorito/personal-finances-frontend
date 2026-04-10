@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 export interface FilterValues {
   start: string;
   end: string;
-  categoria_id: string;
+  category_id: string;
   transaction_type: string;
 }
 
@@ -26,44 +26,44 @@ export function ExpenseFilters({ filters, categories, onChange, onReset }: Expen
   return (
     <div className="flex flex-wrap gap-3 items-end">
       <Input
-        label="Data inicial"
+        label="Start date"
         type="date"
         value={filters.start}
         onChange={(e) => update("start", e.target.value)}
         className="w-full sm:w-40"
       />
       <Input
-        label="Data final"
+        label="End date"
         type="date"
         value={filters.end}
         onChange={(e) => update("end", e.target.value)}
         className="w-full sm:w-40"
       />
       <Select
-        label="Categoria"
-        value={filters.categoria_id}
-        onChange={(e) => update("categoria_id", e.target.value)}
+        label="Category"
+        value={filters.category_id}
+        onChange={(e) => update("category_id", e.target.value)}
         className="w-full sm:w-44"
       >
-        <option value="">Todas</option>
+        <option value="">All</option>
         {categories.map((cat) => (
           <option key={cat.id} value={cat.id}>
-            {cat.nome}
+            {cat.name}
           </option>
         ))}
       </Select>
       <Select
-        label="Tipo"
+        label="Type"
         value={filters.transaction_type}
         onChange={(e) => update("transaction_type", e.target.value)}
         className="w-full sm:w-36"
       >
-        <option value="">Todos</option>
-        <option value="outcome">Despesa</option>
-        <option value="income">Receita</option>
+        <option value="">All</option>
+        <option value="outcome">Expense</option>
+        <option value="income">Income</option>
       </Select>
       <Button variant="ghost" size="sm" onClick={onReset} className="self-end mb-0.5">
-        Limpar filtros
+        Clear filters
       </Button>
     </div>
   );

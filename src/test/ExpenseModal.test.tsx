@@ -7,8 +7,8 @@ import { Expense } from "@/lib/api";
 
 vi.mock("@/lib/api", () => ({
   getCategories: vi.fn().mockResolvedValue([
-    { id: 1, nome: "Alimentação", ativo: true },
-    { id: 2, nome: "Transporte", ativo: true },
+    { id: 1, name: "Alimentação", is_active: true },
+    { id: 2, name: "Transporte", is_active: true },
   ]),
   createExpense: vi.fn().mockResolvedValue({}),
   updateExpense: vi.fn().mockResolvedValue({}),
@@ -99,16 +99,16 @@ function renderModal(
 
 const MOCK_EXPENSE: Expense = {
   id: "abc-123",
-  valor: "150.00",
-  data: "2025-03-10",
-  estabelecimento: "Mercado",
-  descricao: "Compras",
-  categoria: "Alimentação",
-  categoria_id: 1,
-  cnpj: null,
-  tipo_entrada: "texto",
+  amount: "150.00",
+  date: "2025-03-10",
+  establishment: "Mercado",
+  description: "Compras",
+  category: "Alimentação",
+  category_id: 1,
+  tax_id: null,
+  entry_type: "texto",
   transaction_type: "outcome",
-  confianca: 1.0,
+  confidence: 1.0,
   created_at: "2025-03-10T10:00:00",
 };
 
@@ -197,7 +197,7 @@ describe("ExpenseModal — createExpense payload", () => {
 
     await waitFor(() => screen.getByLabelText("Tipo"));
 
-    fireEvent.change(screen.getByLabelText("Valor (R$)"), { target: { value: "50" } });
+    fireEvent.change(screen.getByLabelText("Amount (R$)"), { target: { value: "50" } });
     fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "income" } });
 
     fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);

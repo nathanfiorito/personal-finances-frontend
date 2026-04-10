@@ -31,16 +31,16 @@ vi.mock("lucide-react", () => ({
 function makeExpense(overrides: Partial<Expense> = {}): Expense {
   return {
     id: "1",
-    valor: "100.00",
-    data: "2025-03-10",
-    estabelecimento: "Mercado",
-    descricao: null,
-    categoria: "Alimentação",
-    categoria_id: 1,
-    cnpj: null,
-    tipo_entrada: "texto",
+    amount: "100.00",
+    date: "2025-03-10",
+    establishment: "Mercado",
+    description: null,
+    category: "Alimentação",
+    category_id: 1,
+    tax_id: null,
+    entry_type: "texto",
     transaction_type: "outcome",
-    confianca: 1.0,
+    confidence: 1.0,
     created_at: "2025-03-10T10:00:00",
     ...overrides,
   };
@@ -103,20 +103,20 @@ describe("ExpenseTable — general rendering", () => {
     expect(screen.getByText(/Nenhuma despesa encontrada/i)).toBeInTheDocument();
   });
 
-  it("renders estabelecimento name", () => {
-    renderTable([makeExpense({ estabelecimento: "Posto Shell" })]);
+  it("renders establishment name", () => {
+    renderTable([makeExpense({ establishment: "Posto Shell" })]);
     expect(screen.getAllByText("Posto Shell").length).toBeGreaterThan(0);
   });
 
   it("renders formatted currency value", () => {
-    renderTable([makeExpense({ valor: "250.00" })]);
+    renderTable([makeExpense({ amount: "250.00" })]);
     expect(screen.getAllByText(/250/).length).toBeGreaterThan(0);
   });
 
   it("renders multiple rows", () => {
     const expenses = [
-      makeExpense({ id: "1", estabelecimento: "Mercado" }),
-      makeExpense({ id: "2", estabelecimento: "Farmácia", transaction_type: "income" }),
+      makeExpense({ id: "1", establishment: "Mercado" }),
+      makeExpense({ id: "2", establishment: "Farmácia", transaction_type: "income" }),
     ];
     renderTable(expenses);
     expect(screen.getAllByText("Mercado").length).toBeGreaterThan(0);

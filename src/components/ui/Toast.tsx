@@ -42,7 +42,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       <button
         onClick={() => onDismiss(toast.id)}
         className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-        aria-label="Fechar notificação"
+        aria-label="Close notification"
       >
         <X size={16} />
       </button>

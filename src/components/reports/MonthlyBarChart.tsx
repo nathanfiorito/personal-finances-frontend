@@ -19,8 +19,8 @@ interface MonthlyBarChartProps {
 }
 
 const MONTH_NAMES = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez",
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
 function formatCurrency(value: number): string {
@@ -52,10 +52,10 @@ export function MonthlyBarChart({ data, year }: MonthlyBarChartProps) {
     return (
       <Card>
         <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-          Gastos Mensais — {year}
+          Monthly Spending — {year}
         </h3>
         <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
-          Nenhum dado disponível para {year}
+          No data available for {year}
         </div>
       </Card>
     );
@@ -71,7 +71,7 @@ export function MonthlyBarChart({ data, year }: MonthlyBarChartProps) {
   return (
     <Card>
       <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-6">
-        Gastos Mensais — {year}
+        Monthly Spending — {year}
       </h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
