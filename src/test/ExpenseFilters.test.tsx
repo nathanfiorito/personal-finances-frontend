@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { ExpenseFilters, FilterValues } from "@/components/expenses/ExpenseFilters";
 import { CategoryOut } from "@/lib/api";
 
@@ -67,7 +67,8 @@ describe("ExpenseFilters — transaction_type", () => {
 
   it("Type select has All option", () => {
     renderFilters();
-    expect(screen.getByRole("option", { name: "All" })).toBeInTheDocument();
+    const typeSelect = screen.getByLabelText("Type");
+    expect(within(typeSelect).getByRole("option", { name: "All" })).toBeInTheDocument();
   });
 
   it("Type select has Expense option", () => {
