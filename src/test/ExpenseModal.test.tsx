@@ -119,31 +119,31 @@ describe("ExpenseModal — transaction_type field", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the Tipo select", async () => {
+  it("renders the Type select", async () => {
     renderModal();
     await waitFor(() => {
-      expect(screen.getByLabelText("Tipo")).toBeInTheDocument();
+      expect(screen.getByLabelText("Type")).toBeInTheDocument();
     });
   });
 
-  it("Tipo select has Despesa option", async () => {
+  it("Type select has Expense option", async () => {
     renderModal();
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "Despesa" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "Expense" })).toBeInTheDocument();
     });
   });
 
-  it("Tipo select has Receita option", async () => {
+  it("Type select has Income option", async () => {
     renderModal();
     await waitFor(() => {
-      expect(screen.getByRole("option", { name: "Receita" })).toBeInTheDocument();
+      expect(screen.getByRole("option", { name: "Income" })).toBeInTheDocument();
     });
   });
 
-  it("defaults to Despesa (outcome) on new transaction", async () => {
+  it("defaults to Expense (outcome) on new transaction", async () => {
     renderModal();
     await waitFor(() => {
-      const select = screen.getByLabelText("Tipo") as HTMLSelectElement;
+      const select = screen.getByLabelText("Type") as HTMLSelectElement;
       expect(select.value).toBe("outcome");
     });
   });
@@ -152,36 +152,36 @@ describe("ExpenseModal — transaction_type field", () => {
     const incomeExpense = { ...MOCK_EXPENSE, transaction_type: "income" as const };
     renderModal(true, incomeExpense);
     await waitFor(() => {
-      const select = screen.getByLabelText("Tipo") as HTMLSelectElement;
+      const select = screen.getByLabelText("Type") as HTMLSelectElement;
       expect(select.value).toBe("income");
     });
   });
 
-  it("title shows 'Nova Receita' when transaction_type is income", async () => {
+  it("title shows 'New Income' when transaction_type is income", async () => {
     renderModal();
-    await waitFor(() => screen.getByLabelText("Tipo"));
-    fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "income" } });
-    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Nova Receita");
+    await waitFor(() => screen.getByLabelText("Type"));
+    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "income" } });
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "New Income");
   });
 
-  it("title shows 'Nova Despesa' when transaction_type is outcome", async () => {
+  it("title shows 'New Expense' when transaction_type is outcome", async () => {
     renderModal();
     await waitFor(() => expect(screen.getByRole("dialog")).toBeInTheDocument());
-    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Nova Despesa");
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "New Expense");
   });
 
-  it("title shows 'Editar Receita' when editing an income", async () => {
+  it("title shows 'Edit Income' when editing an income", async () => {
     const incomeExpense = { ...MOCK_EXPENSE, transaction_type: "income" as const };
     renderModal(true, incomeExpense);
     await waitFor(() => {
-      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Editar Receita");
+      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Income");
     });
   });
 
-  it("title shows 'Editar Despesa' when editing an outcome", async () => {
+  it("title shows 'Edit Expense' when editing an outcome", async () => {
     renderModal(true, MOCK_EXPENSE);
     await waitFor(() => {
-      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Editar Despesa");
+      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Expense");
     });
   });
 });
@@ -195,10 +195,10 @@ describe("ExpenseModal — createExpense payload", () => {
     const { createExpense } = await import("@/lib/api");
     renderModal();
 
-    await waitFor(() => screen.getByLabelText("Tipo"));
+    await waitFor(() => screen.getByLabelText("Type"));
 
     fireEvent.change(screen.getByLabelText("Amount (R$)"), { target: { value: "50" } });
-    fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "income" } });
+    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "income" } });
 
     fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { ExpenseFilters, FilterValues } from "@/components/expenses/ExpenseFilters";
 import { CategoryOut } from "@/lib/api";
 
@@ -60,48 +60,49 @@ function renderFilters(overrides?: Partial<FilterValues>, onChange = vi.fn()) {
 }
 
 describe("ExpenseFilters — transaction_type", () => {
-  it("renders the Tipo select", () => {
+  it("renders the Type select", () => {
     renderFilters();
-    expect(screen.getByLabelText("Tipo")).toBeInTheDocument();
+    expect(screen.getByLabelText("Type")).toBeInTheDocument();
   });
 
-  it("Tipo select has Todos option", () => {
+  it("Type select has All option", () => {
     renderFilters();
-    expect(screen.getByRole("option", { name: "Todos" })).toBeInTheDocument();
+    const typeSelect = screen.getByLabelText("Type");
+    expect(within(typeSelect).getByRole("option", { name: "All" })).toBeInTheDocument();
   });
 
-  it("Tipo select has Despesa option", () => {
+  it("Type select has Expense option", () => {
     renderFilters();
-    expect(screen.getByRole("option", { name: "Despesa" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Expense" })).toBeInTheDocument();
   });
 
-  it("Tipo select has Receita option", () => {
+  it("Type select has Income option", () => {
     renderFilters();
-    expect(screen.getByRole("option", { name: "Receita" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Income" })).toBeInTheDocument();
   });
 
-  it("selecting Receita calls onChange with transaction_type=income", () => {
+  it("selecting Income calls onChange with transaction_type=income", () => {
     const onChange = vi.fn();
     renderFilters({}, onChange);
-    fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "income" } });
+    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "income" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ transaction_type: "income" })
     );
   });
 
-  it("selecting Despesa calls onChange with transaction_type=outcome", () => {
+  it("selecting Expense calls onChange with transaction_type=outcome", () => {
     const onChange = vi.fn();
     renderFilters({}, onChange);
-    fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "outcome" } });
+    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "outcome" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ transaction_type: "outcome" })
     );
   });
 
-  it("selecting Todos calls onChange with transaction_type=''", () => {
+  it("selecting All calls onChange with transaction_type=''", () => {
     const onChange = vi.fn();
     renderFilters({ transaction_type: "income" }, onChange);
-    fireEvent.change(screen.getByLabelText("Tipo"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("Type"), { target: { value: "" } });
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ transaction_type: "" })
     );
@@ -109,7 +110,7 @@ describe("ExpenseFilters — transaction_type", () => {
 
   it("current transaction_type value is reflected in the select", () => {
     renderFilters({ transaction_type: "income" });
-    const select = screen.getByLabelText("Tipo") as HTMLSelectElement;
+    const select = screen.getByLabelText("Type") as HTMLSelectElement;
     expect(select.value).toBe("income");
   });
 });
@@ -129,7 +130,7 @@ describe("ExpenseFilters — existing filters still work", () => {
   it("changing start date calls onChange", () => {
     const onChange = vi.fn();
     renderFilters({}, onChange);
-    fireEvent.change(screen.getByLabelText("Data inicial"), {
+    fireEvent.change(screen.getByLabelText("Start date"), {
       target: { value: "2025-01-01" },
     });
     expect(onChange).toHaveBeenCalledWith(

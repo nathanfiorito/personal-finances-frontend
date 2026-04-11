@@ -62,20 +62,20 @@ function renderTable(expenses: Expense[], opts = {}) {
 }
 
 describe("ExpenseTable — transaction_type badge", () => {
-  it("outcome row displays 'Despesa' badge", () => {
+  it("outcome row displays 'Expense' badge", () => {
     renderTable([makeExpense({ transaction_type: "outcome" })]);
-    expect(screen.getAllByText("Despesa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Expense").length).toBeGreaterThan(0);
   });
 
-  it("income row displays 'Receita' badge", () => {
+  it("income row displays 'Income' badge", () => {
     renderTable([makeExpense({ transaction_type: "income" })]);
-    expect(screen.getAllByText("Receita").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Income").length).toBeGreaterThan(0);
   });
 
   it("outcome badge has red color class", () => {
     const { container } = renderTable([makeExpense({ transaction_type: "outcome" })]);
     const badge = Array.from(container.querySelectorAll("span")).find(
-      (el) => el.textContent === "Despesa"
+      (el) => el.textContent === "Expense"
     );
     expect(badge?.className).toMatch(/red/);
   });
@@ -83,7 +83,7 @@ describe("ExpenseTable — transaction_type badge", () => {
   it("income badge has green color class", () => {
     const { container } = renderTable([makeExpense({ transaction_type: "income" })]);
     const badge = Array.from(container.querySelectorAll("span")).find(
-      (el) => el.textContent === "Receita"
+      (el) => el.textContent === "Income"
     );
     expect(badge?.className).toMatch(/green/);
   });
@@ -93,14 +93,14 @@ describe("ExpenseTable — transaction_type badge", () => {
     // @ts-expect-error intentionally testing missing field (legacy data)
     delete expense.transaction_type;
     renderTable([expense]);
-    expect(screen.getAllByText("Despesa").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Expense").length).toBeGreaterThan(0);
   });
 });
 
 describe("ExpenseTable — general rendering", () => {
   it("shows empty state when no expenses", () => {
     renderTable([]);
-    expect(screen.getByText(/Nenhuma despesa encontrada/i)).toBeInTheDocument();
+    expect(screen.getByText(/No expenses found/i)).toBeInTheDocument();
   });
 
   it("renders establishment name", () => {
@@ -121,7 +121,7 @@ describe("ExpenseTable — general rendering", () => {
     renderTable(expenses);
     expect(screen.getAllByText("Mercado").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Farmácia").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Despesa").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Receita").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Expense").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Income").length).toBeGreaterThan(0);
   });
 });
