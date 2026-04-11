@@ -20,29 +20,29 @@ function renderCards(totalIncome: number, totalOutcome: number, transactionCount
 }
 
 describe("SummaryCards", () => {
-  it("renders Receitas label", () => {
+  it("renders Income label", () => {
     renderCards(3000, 500);
-    expect(screen.getByText("Receitas")).toBeInTheDocument();
+    expect(screen.getByText("Income")).toBeInTheDocument();
   });
 
-  it("renders Despesas label", () => {
+  it("renders Expenses label", () => {
     renderCards(3000, 500);
-    expect(screen.getByText("Despesas")).toBeInTheDocument();
+    expect(screen.getByText("Expenses")).toBeInTheDocument();
   });
 
-  it("renders Saldo label", () => {
+  it("renders Balance label", () => {
     renderCards(3000, 500);
-    expect(screen.getByText("Saldo")).toBeInTheDocument();
+    expect(screen.getByText("Balance")).toBeInTheDocument();
   });
 
-  it("renders Transações label", () => {
+  it("renders Transactions label", () => {
     renderCards(0, 0, 12);
-    expect(screen.getByText("Transações")).toBeInTheDocument();
+    expect(screen.getByText("Transactions")).toBeInTheDocument();
   });
 
   it("displays formatted income value", () => {
     renderCards(3000, 120);
-    // income=3000, outcome=120 → saldo=2880, so 3000 appears only in the Receitas card
+    // income=3000, outcome=120 → balance=2880, so 3000 appears only in the Income card
     expect(screen.getByText(/3[.,]000/)).toBeInTheDocument();
   });
 
@@ -51,26 +51,26 @@ describe("SummaryCards", () => {
     expect(screen.getByText("42")).toBeInTheDocument();
   });
 
-  it("saldo = income - outcome (positive)", () => {
+  it("balance = income - outcome (positive)", () => {
     renderCards(3000, 500);
-    // saldo = 2500
+    // balance = 2500
     expect(screen.getByText(/2\.500/)).toBeInTheDocument();
   });
 
-  it("saldo = income - outcome (negative)", () => {
+  it("balance = income - outcome (negative)", () => {
     renderCards(100, 800);
-    // saldo = -700 — negative value should be formatted with minus sign
-    const saldoEl = screen.getAllByText(/-?700/).at(0);
-    expect(saldoEl).toBeInTheDocument();
+    // balance = -700 — negative value should be formatted with minus sign
+    const balanceEl = screen.getAllByText(/-?700/).at(0);
+    expect(balanceEl).toBeInTheDocument();
   });
 
-  it("positive saldo uses green color class", () => {
+  it("positive balance uses green color class", () => {
     const { container } = renderCards(3000, 500);
     const greenEls = container.querySelectorAll('[class*="text-green"]');
     expect(greenEls.length).toBeGreaterThan(0);
   });
 
-  it("negative saldo uses red color class", () => {
+  it("negative balance uses red color class", () => {
     const { container } = renderCards(100, 800);
     const redEls = container.querySelectorAll('[class*="text-red"]');
     expect(redEls.length).toBeGreaterThan(0);
