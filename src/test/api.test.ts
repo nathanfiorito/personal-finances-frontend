@@ -52,21 +52,21 @@ beforeEach(() => {
 
 // ─── Route paths ─────────────────────────────────────────────────────────────
 
-describe("route paths — migrated to /api/transactions", () => {
-  it("getExpenses calls /api/transactions", async () => {
+describe("route paths — migrated to /api/v2/transactions", () => {
+  it("getExpenses calls /api/v2/transactions", async () => {
     mockFetch(200, { items: [], total: 0, page: 1, page_size: 20 });
     await getExpenses();
-    expect(capturedUrl()).toContain("/api/transactions");
+    expect(capturedUrl()).toContain("/api/v2/transactions");
     expect(capturedUrl()).not.toContain("/api/expenses");
   });
 
-  it("getExpense calls /api/transactions/{id}", async () => {
+  it("getExpense calls /api/v2/transactions/{id}", async () => {
     mockFetch(200, {});
     await getExpense("abc-123");
-    expect(capturedUrl()).toBe("http://api.test/api/transactions/abc-123");
+    expect(capturedUrl()).toBe("http://api.test/api/v2/transactions/abc-123");
   });
 
-  it("createExpense POSTs to /api/transactions", async () => {
+  it("createExpense POSTs to /api/v2/transactions", async () => {
     mockFetch(201, {});
     await createExpense({
       amount: 50,
@@ -74,19 +74,19 @@ describe("route paths — migrated to /api/transactions", () => {
       entry_type: "texto",
       transaction_type: "outcome",
     });
-    expect(capturedUrl()).toBe("http://api.test/api/transactions");
+    expect(capturedUrl()).toBe("http://api.test/api/v2/transactions");
   });
 
-  it("updateExpense PUTs to /api/transactions/{id}", async () => {
+  it("updateExpense PUTs to /api/v2/transactions/{id}", async () => {
     mockFetch(200, {});
     await updateExpense("abc-123", { transaction_type: "income" });
-    expect(capturedUrl()).toBe("http://api.test/api/transactions/abc-123");
+    expect(capturedUrl()).toBe("http://api.test/api/v2/transactions/abc-123");
   });
 
-  it("deleteExpense DELETEs /api/transactions/{id}", async () => {
+  it("deleteExpense DELETEs /api/v2/transactions/{id}", async () => {
     mockFetch(204);
     await deleteExpense("abc-123");
-    expect(capturedUrl()).toBe("http://api.test/api/transactions/abc-123");
+    expect(capturedUrl()).toBe("http://api.test/api/v2/transactions/abc-123");
   });
 });
 
@@ -96,7 +96,7 @@ describe("getExpenses — query params", () => {
   it("no filters → no query string", async () => {
     mockFetch(200, { items: [], total: 0, page: 1, page_size: 20 });
     await getExpenses();
-    expect(capturedUrl()).toBe("http://api.test/api/transactions");
+    expect(capturedUrl()).toBe("http://api.test/api/v2/transactions");
   });
 
   it("transaction_type=income is appended", async () => {

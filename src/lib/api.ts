@@ -125,53 +125,53 @@ export async function getExpenses(filters: ExpenseFilters = {}): Promise<Paginat
   if (filters.page_size !== undefined) params.set("page_size", String(filters.page_size));
 
   const query = params.toString() ? `?${params.toString()}` : "";
-  return apiFetch<PaginatedExpenses>(`/api/transactions${query}`);
+  return apiFetch<PaginatedExpenses>(`/api/v2/transactions${query}`);
 }
 
 export async function getExpense(id: string): Promise<Expense> {
-  return apiFetch<Expense>(`/api/transactions/${id}`);
+  return apiFetch<Expense>(`/api/v2/transactions/${id}`);
 }
 
 export async function createExpense(data: ExpenseInput): Promise<Expense> {
-  return apiFetch<Expense>("/api/transactions", {
+  return apiFetch<Expense>("/api/v2/transactions", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
 export async function updateExpense(id: string, data: Partial<ExpenseInput>): Promise<Expense> {
-  return apiFetch<Expense>(`/api/transactions/${id}`, {
+  return apiFetch<Expense>(`/api/v2/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  return apiFetch<void>(`/api/transactions/${id}`, { method: "DELETE" });
+  return apiFetch<void>(`/api/v2/transactions/${id}`, { method: "DELETE" });
 }
 
 // ─── Categories ──────────────────────────────────────────────────────────────
 
 export async function getCategories(): Promise<CategoryOut[]> {
-  return apiFetch<CategoryOut[]>("/api/categories");
+  return apiFetch<CategoryOut[]>("/api/v2/categories");
 }
 
 export async function createCategory(name: string): Promise<CategoryOut> {
-  return apiFetch<CategoryOut>("/api/categories", {
+  return apiFetch<CategoryOut>("/api/v2/categories", {
     method: "POST",
     body: JSON.stringify({ name }),
   });
 }
 
 export async function updateCategory(id: number, data: Partial<CategoryOut>): Promise<CategoryOut> {
-  return apiFetch<CategoryOut>(`/api/categories/${id}`, {
+  return apiFetch<CategoryOut>(`/api/v2/categories/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 }
 
 export async function deactivateCategory(id: number): Promise<void> {
-  return apiFetch<void>(`/api/categories/${id}`, { method: "DELETE" });
+  return apiFetch<void>(`/api/v2/categories/${id}`, { method: "DELETE" });
 }
 
 // ─── Reports ─────────────────────────────────────────────────────────────────
@@ -183,11 +183,11 @@ export async function getSummary(
 ): Promise<SummaryItem[]> {
   const params = new URLSearchParams({ start, end });
   if (transaction_type) params.set("transaction_type", transaction_type);
-  return apiFetch<SummaryItem[]>(`/api/reports/summary?${params.toString()}`);
+  return apiFetch<SummaryItem[]>(`/api/v2/reports/summary?${params.toString()}`);
 }
 
 export async function getMonthly(year: number): Promise<MonthlyItem[]> {
-  return apiFetch<MonthlyItem[]>(`/api/reports/monthly?year=${year}`);
+  return apiFetch<MonthlyItem[]>(`/api/v2/reports/monthly?year=${year}`);
 }
 
 // ─── Export ──────────────────────────────────────────────────────────────────
@@ -196,7 +196,7 @@ export async function exportCsv(start: string, end: string): Promise<Blob> {
   const jwt = await getJwt();
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  const response = await fetch(`${baseUrl}/api/export/csv?start=${start}&end=${end}`, {
+  const response = await fetch(`${baseUrl}/api/v2/export/csv?start=${start}&end=${end}`, {
     headers: jwt ? { Authorization: `Bearer ${jwt}` } : {},
   });
 

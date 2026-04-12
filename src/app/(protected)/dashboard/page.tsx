@@ -13,7 +13,7 @@ async function fetchSummary(
   const params = new URLSearchParams({ start, end });
   if (transaction_type) params.set("transaction_type", transaction_type);
   try {
-    const res = await fetch(`${baseUrl}/api/reports/summary?${params.toString()}`, {
+    const res = await fetch(`${baseUrl}/api/v2/reports/summary?${params.toString()}`, {
       headers: { Authorization: `Bearer ${jwt}` },
       cache: "no-store",
     });
@@ -28,7 +28,7 @@ async function fetchTransactionCount(jwt: string, start: string, end: string): P
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
     const res = await fetch(
-      `${baseUrl}/api/transactions?start=${start}&end=${end}&page=1&page_size=1`,
+      `${baseUrl}/api/v2/transactions?start=${start}&end=${end}&page=1&page_size=1`,
       {
         headers: { Authorization: `Bearer ${jwt}` },
         cache: "no-store",
