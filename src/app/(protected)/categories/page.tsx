@@ -1,40 +1,13 @@
-import { createClient } from "@/lib/supabase/server";
-import { CategoryOut } from "@/lib/api";
+import { serverFetch } from "@/lib/api/server";
+import type { Category } from "@/lib/types";
 import { CategoryList } from "@/components/categories/CategoryList";
 
-async function fetchCategories(jwt: string): Promise<CategoryOut[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  try {
-    const res = await fetch(`${baseUrl}/api/v2/categories`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
-}
-
 export default async function CategoriesPage() {
-  const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const jwt = session?.access_token ?? "";
-  const categories = await fetchCategories(jwt);
-
+  const categories = await serverFetch<Category[]>("/api/v2/categories") ?? [];
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Categories</h1>
-        <p className="text-sm text-neutral-500 dark:text-dark-muted mt-1">
-          Manage expense categories
-        </p>
-      </div>
-
-      <CategoryList initialCategories={categories} />
+      <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Categories</h1>
+      <CategoryList categories={categories} />
     </div>
   );
 }

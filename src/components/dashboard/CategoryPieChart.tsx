@@ -1,92 +1,33 @@
 "use client";
 
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { getCategoryColor } from "@/lib/chart-colors";
-import { SummaryItem } from "@/lib/api";
+import { formatCurrency } from "@/lib/utils";
+import type { SummaryItem } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 
-interface CategoryPieChartProps {
-  data: SummaryItem[];
-}
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-const CustomTooltip = ({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: Array<{ name: string; value: number }>;
-}) => {
-  if (active && payload && payload.length) {
-    const { name, value } = payload[0];
-    return (
-      <div className="bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border rounded-lg px-3 py-2 shadow text-sm">
-        <p className="font-medium text-neutral-800 dark:text-dark-primary">{name}</p>
-        <p className="font-bold text-brand-500">{formatCurrency(value)}</p>
-      </div>
-    );
-  }
-  return null;
-};
-
-export function CategoryPieChart({ data }: CategoryPieChartProps) {
-  if (data.length === 0) {
+export function CategoryPieChart({ data }: { data: SummaryItem[] }) {
+  if (!data.length) {
     return (
       <Card>
-        <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-          Spending by Category
-        </h3>
-        <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
-          No data available for this month
-        </div>
+        <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">Expenses by category</h3>
+        <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">No data for this month</div>
       </Card>
     );
   }
-
-  const chartData = data.map((item) => ({
-    name: item.category,
-    value: parseFloat(item.total),
-    color: getCategoryColor(item.category),
-  }));
-
+  const chartData = data.map(d => ({ name: d.category, value: parseFloat(d.total) }));
   return (
     <Card>
-      <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
-        Spending by Category
-      </h3>
-      <ResponsiveContainer width="100%" height={280}>
+      <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">Expenses by category</h3>
+      <ResponsiveContainer width="100%" height={200}>
         <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={100}
-            paddingAngle={2}
-            dataKey="value"
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+          <Pie data={chartData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
+            {chartData.map((entry, i) => (
+              <Cell key={entry.name} fill={getCategoryColor(entry.name, i)} />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
-          <Legend
-            iconType="circle"
-            iconSize={10}
-            formatter={(value) => (
-              <span className="text-sm text-neutral-600 dark:text-dark-secondary">{value}</span>
-            )}
-          />
+          <Tooltip formatter={(value: number) => formatCurrency(value)} />
+          <Legend iconType="circle" iconSize={8} />
         </PieChart>
       </ResponsiveContainer>
     </Card>

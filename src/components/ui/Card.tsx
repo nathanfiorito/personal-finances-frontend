@@ -1,15 +1,8 @@
-import { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  padding?: boolean;
-}
-
-export function Card({ children, className = "", padding = true, ...props }: CardProps) {
+export function Card({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div
-      className={`bg-white border border-neutral-200 rounded-xl shadow dark:bg-dark-surface dark:border-dark-border ${padding ? "p-6" : ""} ${className}`}
-      {...props}
-    >
+    <div className={cn("rounded-xl bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border shadow dark:shadow-none p-6", className)}>
       {children}
     </div>
   );

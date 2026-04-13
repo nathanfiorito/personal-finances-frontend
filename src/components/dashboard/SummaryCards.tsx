@@ -1,93 +1,37 @@
+import { formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
-import { TrendingDown, TrendingUp, Hash } from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 
 interface SummaryCardsProps {
   totalIncome: number;
-  totalOutcome: number;
+  totalExpenses: number;
   transactionCount: number;
 }
 
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
-
-export function SummaryCards({ totalIncome, totalOutcome, transactionCount }: SummaryCardsProps) {
-  const balance = totalIncome - totalOutcome;
-
+export function SummaryCards({ totalIncome, totalExpenses, transactionCount }: SummaryCardsProps) {
+  const net = totalIncome - totalExpenses;
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card data-testid="summary-card">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Income</p>
-            <p className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400">
-              {formatCurrency(totalIncome)}
-            </p>
-          </div>
-          <div className="p-2 bg-green-50 dark:bg-green-500/10 rounded-lg">
-            <TrendingUp className="text-green-600 dark:text-green-400" size={20} />
-          </div>
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <Card className="flex items-center gap-4">
+        <div className="p-2 rounded-lg bg-green-50 dark:bg-green-950"><TrendingUp size={20} className="text-success" /></div>
+        <div>
+          <p className="text-xs font-medium text-neutral-500 dark:text-dark-muted uppercase tracking-wide">Income</p>
+          <p className="text-2xl font-bold text-success">{formatCurrency(totalIncome)}</p>
         </div>
       </Card>
-
-      <Card data-testid="summary-card">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Expenses</p>
-            <p className="mt-1 text-2xl font-bold text-red-600 dark:text-red-400">
-              {formatCurrency(totalOutcome)}
-            </p>
-          </div>
-          <div className="p-2 bg-red-50 dark:bg-red-500/10 rounded-lg">
-            <TrendingDown className="text-red-600 dark:text-red-400" size={20} />
-          </div>
+      <Card className="flex items-center gap-4">
+        <div className="p-2 rounded-lg bg-red-50 dark:bg-red-950"><TrendingDown size={20} className="text-danger" /></div>
+        <div>
+          <p className="text-xs font-medium text-neutral-500 dark:text-dark-muted uppercase tracking-wide">Expenses</p>
+          <p className="text-2xl font-bold text-danger">{formatCurrency(totalExpenses)}</p>
         </div>
       </Card>
-
-      <Card data-testid="summary-card">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Balance</p>
-            <p
-              className={`mt-1 text-2xl font-bold ${
-                balance >= 0
-                  ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
-              }`}
-            >
-              {formatCurrency(balance)}
-            </p>
-          </div>
-          <div
-            className={`p-2 rounded-lg ${
-              balance >= 0
-                ? "bg-green-50 dark:bg-green-500/10"
-                : "bg-red-50 dark:bg-red-500/10"
-            }`}
-          >
-            {balance >= 0 ? (
-              <TrendingUp className="text-green-600 dark:text-green-400" size={20} />
-            ) : (
-              <TrendingDown className="text-red-600 dark:text-red-400" size={20} />
-            )}
-          </div>
-        </div>
-      </Card>
-
-      <Card data-testid="summary-card">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-neutral-500 dark:text-dark-muted">Transactions</p>
-            <p className="mt-1 text-2xl font-bold text-neutral-900 dark:text-dark-primary">
-              {transactionCount}
-            </p>
-          </div>
-          <div className="p-2 bg-blue-50 dark:bg-blue-500/10 rounded-lg">
-            <Hash className="text-blue-500" size={20} />
-          </div>
+      <Card className="flex items-center gap-4">
+        <div className="p-2 rounded-lg bg-brand-50 dark:bg-brand-700/20"><Wallet size={20} className="text-brand-500" /></div>
+        <div>
+          <p className="text-xs font-medium text-neutral-500 dark:text-dark-muted uppercase tracking-wide">Net Balance</p>
+          <p className={`text-2xl font-bold ${net >= 0 ? "text-brand-500" : "text-danger"}`}>{formatCurrency(net)}</p>
+          <p className="text-xs text-neutral-400 dark:text-dark-muted">{transactionCount} transactions</p>
         </div>
       </Card>
     </div>
