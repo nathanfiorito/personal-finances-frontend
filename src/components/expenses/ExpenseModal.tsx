@@ -16,8 +16,8 @@ interface ExpenseModalProps {
 }
 
 const TIPO_OPTIONS = [
-  { value: "texto", label: "Text" },
-  { value: "imagem", label: "Image" },
+  { value: "text", label: "Text" },
+  { value: "image", label: "Image" },
   { value: "pdf", label: "PDF" },
 ];
 
@@ -32,7 +32,7 @@ const DEFAULT_FORM: ExpenseInput = {
   establishment: "",
   description: "",
   category_id: undefined,
-  entry_type: "texto",
+  entry_type: "text",
   transaction_type: "outcome",
 };
 

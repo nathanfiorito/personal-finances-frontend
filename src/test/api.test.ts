@@ -50,7 +50,7 @@ const emptyBffExpenses = {
 describe("route paths", () => {
   it("createExpense POSTs to /api/v2/transactions", async () => {
     mockFetch(201, {});
-    await createExpense({ amount: 50, date: "2025-03-01", entry_type: "texto", transaction_type: "outcome" });
+    await createExpense({ amount: 50, date: "2025-03-01", entry_type: "text", transaction_type: "outcome" });
     expect(capturedUrl()).toBe("http://api.test/api/v2/transactions");
   });
 
@@ -126,7 +126,7 @@ describe("getBffExpenses — query params", () => {
 describe("HTTP methods", () => {
   it("createExpense sends POST", async () => {
     mockFetch(201, {});
-    await createExpense({ amount: 100, date: "2025-03-01", entry_type: "texto", transaction_type: "outcome" });
+    await createExpense({ amount: 100, date: "2025-03-01", entry_type: "text", transaction_type: "outcome" });
     const [, options] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0];
     expect(options.method).toBe("POST");
   });
