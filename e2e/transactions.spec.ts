@@ -1,10 +1,19 @@
 import { test, expect } from "@playwright/test";
 
+if (!process.env.TEST_USER_EMAIL || !process.env.TEST_USER_PASSWORD) {
+  throw new Error(
+    "TEST_USER_EMAIL and TEST_USER_PASSWORD must be set in .env.test"
+  );
+}
+
+const TEST_EMAIL = process.env.TEST_USER_EMAIL;
+const TEST_PASSWORD = process.env.TEST_USER_PASSWORD;
+
 // Reusable login helper
 async function login(page: import("@playwright/test").Page) {
   await page.goto("/login");
-  await page.fill('input[type="email"]', process.env.TEST_USER_EMAIL!);
-  await page.fill('input[type="password"]', process.env.TEST_USER_PASSWORD!);
+  await page.fill('input[type="email"]', TEST_EMAIL);
+  await page.fill('input[type="password"]', TEST_PASSWORD);
   await page.click('button[type="submit"]');
   await page.waitForURL(/\/dashboard/);
 }
@@ -24,8 +33,9 @@ test("create a transaction and see it in the table", async ({ page }) => {
 test("delete a transaction with confirmation", async ({ page }) => {
   await login(page);
   await page.goto("/transactions");
-  // Confirm the first delete button
-  page.once("dialog", dialog => dialog.accept());
+  const dialogPromise = page.waitForEvent("dialog");
   await page.locator('[title="Delete"]').first().click();
+  const dialog = await dialogPromise;
+  await dialog.accept();
   await expect(page.locator("text=Transaction deleted")).toBeVisible();
 });

@@ -6,7 +6,6 @@ dotenv.config({ path: path.resolve(__dirname, ".env.test") });
 
 export default defineConfig({
   testDir: ".",
-  testMatch: ["./tests/**/*.spec.ts", "./e2e/**/*.spec.ts"],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -22,6 +21,7 @@ export default defineConfig({
     },
     {
       name: "mobile",
+      testMatch: ["./tests/**/*.spec.ts"],
       use: {
         viewport: { width: 390, height: 844 },
         isMobile: true,
@@ -29,23 +29,22 @@ export default defineConfig({
         storageState: "tests/.auth/user.json",
       },
       dependencies: ["setup"],
-      testIgnore: /desktop-regression/,
     },
     {
       name: "desktop",
+      testMatch: ["./tests/**/*.spec.ts"],
       use: {
         viewport: { width: 1280, height: 800 },
         storageState: "tests/.auth/user.json",
       },
       dependencies: ["setup"],
-      testMatch: /desktop-regression/,
     },
     {
       name: "chromium",
+      testMatch: ["./e2e/**/*.spec.ts"],
       use: {
         browserName: "chromium",
       },
-      testMatch: ["./e2e/**/*.spec.ts"],
     },
   ],
   // Start the dev server manually before running tests: npm run dev
