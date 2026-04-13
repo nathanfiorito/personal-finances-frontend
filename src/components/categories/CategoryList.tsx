@@ -4,7 +4,6 @@ import { useState } from "react";
 import { CategoryOut, createCategory, updateCategory, deactivateCategory } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { Card } from "@/components/ui/Card";
 import { useToast } from "@/hooks/useToast";
@@ -34,6 +33,9 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
   // Deactivate confirm modal
   const [deactivateTarget, setDeactivateTarget] = useState<CategoryOut | null>(null);
   const [deactivating, setDeactivating] = useState(false);
+
+  // Activate
+  const [activatingId, setActivatingId] = useState<number | null>(null);
 
   // ─── Create ───────────────────────────────────────────────────────────────
 
@@ -113,6 +115,24 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
       showToast(msg, "error");
     } finally {
       setDeactivating(false);
+    }
+  };
+
+  // ─── Activate ─────────────────────────────────────────────────────────────
+
+  const handleActivate = async (cat: CategoryOut) => {
+    setActivatingId(cat.id);
+    try {
+      const updated = await updateCategory(cat.id, { is_active: true });
+      setCategories((prev) =>
+        prev.map((c) => (c.id === updated.id ? updated : c))
+      );
+      showToast(`Category "${cat.name}" activated`, "success");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error activating category";
+      showToast(msg, "error");
+    } finally {
+      setActivatingId(null);
     }
   };
 
@@ -196,7 +216,14 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                       {cat.name}
                     </span>
                   </div>
-                  <Badge variant="default">Inactive</Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleActivate(cat)}
+                    loading={activatingId === cat.id}
+                  >
+                    Activate
+                  </Button>
                 </li>
               ))}
             </ul>

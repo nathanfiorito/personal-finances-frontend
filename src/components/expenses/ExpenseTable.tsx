@@ -157,6 +157,7 @@ export function ExpenseTable({
               <th className="px-4 py-3 text-left font-semibold text-neutral-600 dark:text-dark-secondary">Category</th>
               <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Amount</th>
               <th className="px-4 py-3 text-center font-semibold text-neutral-600 dark:text-dark-secondary">Type</th>
+              <th className="px-4 py-3 text-center font-semibold text-neutral-600 dark:text-dark-secondary">Payment</th>
               <th className="px-4 py-3 text-right font-semibold text-neutral-600 dark:text-dark-secondary">Actions</th>
             </tr>
           </thead>
@@ -164,7 +165,7 @@ export function ExpenseTable({
             {loading
               ? skeletonRows.map((_, i) => (
                   <tr key={i} className="border-b border-neutral-100 dark:border-dark-border animate-pulse">
-                    {Array.from({ length: 6 }).map((_, j) => (
+                    {Array.from({ length: 7 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
                         <div className="h-4 bg-neutral-200 dark:bg-dark-surface2 rounded w-3/4" />
                       </td>
@@ -201,6 +202,9 @@ export function ExpenseTable({
                     </td>
                     <td className="px-4 py-3 text-center">
                       <TransactionTypeBadge type={expense.transaction_type ?? "outcome"} />
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-neutral-600 dark:text-dark-secondary capitalize">
+                      {expense.payment_method === "credit" ? "Credit" : "Debit"}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
