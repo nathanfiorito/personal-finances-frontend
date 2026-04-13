@@ -15,12 +15,6 @@ interface ExpenseModalProps {
   onSaved: () => void;
 }
 
-const TIPO_OPTIONS = [
-  { value: "text", label: "Text" },
-  { value: "image", label: "Image" },
-  { value: "pdf", label: "PDF" },
-];
-
 const TRANSACTION_TYPE_OPTIONS = [
   { value: "outcome", label: "Expense" },
   { value: "income", label: "Income" },
@@ -32,7 +26,7 @@ const DEFAULT_FORM: ExpenseInput = {
   establishment: "",
   description: "",
   category_id: undefined,
-  entry_type: "text",
+  entry_type: "manual",
   transaction_type: "outcome",
 };
 
@@ -72,7 +66,6 @@ export function ExpenseModal({ open, onClose, expense, categories, onSaved }: Ex
     const errs: Partial<Record<keyof ExpenseInput, string>> = {};
     if (!form.amount || form.amount <= 0) errs.amount = "Enter an amount greater than zero";
     if (!form.date) errs.date = "Enter the date";
-    if (!form.entry_type) errs.entry_type = "Select the type";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -182,20 +175,6 @@ export function ExpenseModal({ open, onClose, expense, categories, onSaved }: Ex
               ))}
           </Select>
         </div>
-
-        <Select
-          label="Entry type"
-          value={form.entry_type}
-          onChange={(e) => update("entry_type", e.target.value)}
-          error={errors.entry_type}
-          required
-        >
-          {TIPO_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </Select>
 
         <div className="flex gap-3 pt-2 justify-end">
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
