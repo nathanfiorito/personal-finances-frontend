@@ -1,28 +1,25 @@
-import { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
-interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "success" | "danger" | "warning" | "info";
+type BadgeVariant = "brand" | "income" | "expense" | "active" | "inactive" | "default";
+
+interface BadgeProps {
+  variant?: BadgeVariant;
+  children: React.ReactNode;
+  className?: string;
 }
 
-export function Badge({ variant = "default", className = "", children, ...props }: BadgeProps) {
-  const variants = {
-    default:
-      "bg-neutral-100 text-neutral-700 dark:bg-dark-surface2 dark:text-dark-secondary",
-    success:
-      "bg-success-bg text-success dark:bg-success-bg-dark dark:text-success-dark",
-    danger:
-      "bg-danger-bg text-danger dark:bg-danger-bg-dark dark:text-danger-dark",
-    warning:
-      "bg-warning-bg text-warning dark:bg-warning-bg-dark dark:text-warning-dark",
-    info:
-      "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
-  };
+const variants: Record<BadgeVariant, string> = {
+  brand:    "bg-brand-50 text-brand-700 dark:bg-brand-700/20 dark:text-brand-400",
+  income:   "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400",
+  expense:  "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400",
+  active:   "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400",
+  inactive: "bg-neutral-100 text-neutral-500 dark:bg-dark-surface2 dark:text-dark-muted",
+  default:  "bg-neutral-100 text-neutral-700 dark:bg-dark-surface2 dark:text-dark-secondary",
+};
 
+export function Badge({ variant = "default", children, className }: BadgeProps) {
   return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${variants[variant]} ${className}`}
-      {...props}
-    >
+    <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium", variants[variant], className)}>
       {children}
     </span>
   );

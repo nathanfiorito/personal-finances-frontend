@@ -1,29 +1,19 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { ToastProvider } from "@/components/ui/ToastProvider";
 
-export default async function ProtectedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
+export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
-      <Sidebar />
-      <main className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-6xl w-full mx-auto">
-          {children}
-        </div>
-      </main>
-    </div>
+    <ToastProvider>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
+          <div className="px-4 py-6 md:px-8 md:py-8 max-w-6xl mx-auto">
+            {children}
+          </div>
+        </main>
+        <MobileNav />
+      </div>
+    </ToastProvider>
   );
 }

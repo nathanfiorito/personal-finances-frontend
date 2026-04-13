@@ -1,48 +1,19 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ToastProvider } from "@/components/ui/ToastProvider";
-import { OpenTelemetryInit } from "@/components/OpenTelemetryInit";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Personal Finances",
-  description: "Personal expense tracking",
+  description: "Personal expense tracker",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Prevent dark mode flash */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (theme === 'dark' || (!theme && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                  }
-                } catch(e) {}
-              })();
-            `,
-          }}
-        />
-      </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <OpenTelemetryInit />
-        <ToastProvider>{children}</ToastProvider>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans bg-neutral-50 dark:bg-dark-bg text-neutral-900 dark:text-dark-primary`}>
+        {children}
       </body>
     </html>
   );
