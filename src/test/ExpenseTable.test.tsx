@@ -40,7 +40,6 @@ function makeExpense(overrides: Partial<Expense> = {}): Expense {
     tax_id: null,
     entry_type: "text",
     transaction_type: "outcome",
-    payment_method: "debit",
     confidence: 1.0,
     created_at: "2025-03-10T10:00:00",
     ...overrides,
@@ -95,18 +94,6 @@ describe("ExpenseTable — transaction_type badge", () => {
     delete expense.transaction_type;
     renderTable([expense]);
     expect(screen.getAllByText("Expense").length).toBeGreaterThan(0);
-  });
-});
-
-describe("ExpenseTable — payment_method column", () => {
-  it("renders a Payment column header", () => {
-    renderTable([makeExpense()]);
-    expect(screen.getByText("Payment")).toBeInTheDocument();
-  });
-
-  it("displays Credit for credit payment method", () => {
-    renderTable([makeExpense({ payment_method: "credit" })]);
-    expect(screen.getByText("Credit")).toBeInTheDocument();
   });
 });
 
