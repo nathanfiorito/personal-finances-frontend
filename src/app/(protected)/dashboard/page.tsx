@@ -1,56 +1,32 @@
 import { createClient } from "@/lib/supabase/server";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { CategoryPieChart } from "@/components/dashboard/CategoryPieChart";
-import { SummaryItem } from "@/lib/api";
+import { BffDashboardResponse, SummaryItem } from "@/lib/api";
 
-async function fetchSummary(
+async function fetchDashboard(
   jwt: string,
   start: string,
-  end: string,
-  transaction_type?: string
-): Promise<SummaryItem[]> {
+  end: string
+): Promise<BffDashboardResponse> {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const params = new URLSearchParams({ start, end });
-  if (transaction_type) params.set("transaction_type", transaction_type);
-  try {
-    const res = await fetch(`${baseUrl}/api/v2/reports/summary?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${jwt}` },
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
-}
-
-async function fetchTransactionCount(jwt: string, start: string, end: string): Promise<number> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const empty: BffDashboardResponse = { outcome_summary: [], income_summary: [], transaction_count: 0 };
   try {
     const res = await fetch(
-      `${baseUrl}/api/v2/transactions?start=${start}&end=${end}&page=1&page_size=1`,
-      {
-        headers: { Authorization: `Bearer ${jwt}` },
-        cache: "no-store",
-      }
+      `${baseUrl}/api/v2/bff/dashboard?start=${start}&end=${end}`,
+      { headers: { Authorization: `Bearer ${jwt}` }, cache: "no-store" }
     );
-    if (!res.ok) return 0;
-    const data = await res.json();
-    return data.total ?? 0;
+    if (!res.ok) return empty;
+    return res.json();
   } catch {
-    return 0;
+    return empty;
   }
 }
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
+  const { data: { session } } = await supabase.auth.getSession();
   const jwt = session?.access_token ?? "";
 
-  // Current month range
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -60,14 +36,10 @@ export default async function DashboardPage() {
 
   const monthLabel = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
-  const [outcomeSummary, incomeSummary, transactionCount] = await Promise.all([
-    fetchSummary(jwt, start, end, "outcome"),
-    fetchSummary(jwt, start, end, "income"),
-    fetchTransactionCount(jwt, start, end),
-  ]);
+  const { outcome_summary, income_summary, transaction_count } = await fetchDashboard(jwt, start, end);
 
-  const totalOutcome = outcomeSummary.reduce((sum, item) => sum + parseFloat(item.total), 0);
-  const totalIncome = incomeSummary.reduce((sum, item) => sum + parseFloat(item.total), 0);
+  const totalOutcome = outcome_summary.reduce((sum, item) => sum + parseFloat(item.total), 0);
+  const totalIncome = income_summary.reduce((sum, item) => sum + parseFloat(item.total), 0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -79,27 +51,26 @@ export default async function DashboardPage() {
       <SummaryCards
         totalIncome={totalIncome}
         totalOutcome={totalOutcome}
-        transactionCount={transactionCount}
+        transactionCount={transaction_count}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CategoryPieChart data={outcomeSummary} />
+        <CategoryPieChart data={outcome_summary} />
 
-        {/* Top expenses list */}
         <div className="bg-white dark:bg-dark-surface border border-neutral-200 dark:border-dark-border rounded-xl shadow p-6">
           <h3 className="text-base font-semibold text-neutral-900 dark:text-dark-primary mb-4">
             Top expenses this month
           </h3>
-          {outcomeSummary.length === 0 ? (
+          {outcome_summary.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-neutral-400 dark:text-dark-muted text-sm">
               No data available for this month
             </div>
           ) : (
             <ul className="flex flex-col gap-3">
-              {outcomeSummary
+              {outcome_summary
                 .slice()
                 .sort((a, b) => parseFloat(b.total) - parseFloat(a.total))
-                .map((item) => {
+                .map((item: SummaryItem) => {
                   const pct = totalOutcome > 0 ? (parseFloat(item.total) / totalOutcome) * 100 : 0;
                   return (
                     <li key={item.category}>
