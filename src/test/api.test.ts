@@ -88,6 +88,12 @@ describe("getBffExpenses — query params", () => {
     expect(capturedUrl()).toContain("transaction_type=income");
   });
 
+  it("transaction_type=outcome is appended", async () => {
+    mockFetch(200, emptyBffExpenses);
+    await getBffExpenses({ transaction_type: "outcome" });
+    expect(capturedUrl()).toContain("transaction_type=outcome");
+  });
+
   it("undefined transaction_type is not appended", async () => {
     mockFetch(200, emptyBffExpenses);
     await getBffExpenses({ transaction_type: undefined });
@@ -107,9 +113,11 @@ describe("getBffExpenses — query params", () => {
     await getBffExpenses({ start: "2025-03-01", end: "2025-03-31", category_id: 2, transaction_type: "income", page: 2, page_size: 10 });
     const url = capturedUrl();
     expect(url).toContain("start=2025-03-01");
+    expect(url).toContain("end=2025-03-31");
     expect(url).toContain("category_id=2");
     expect(url).toContain("transaction_type=income");
     expect(url).toContain("page=2");
+    expect(url).toContain("page_size=10");
   });
 });
 
