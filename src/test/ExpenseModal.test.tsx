@@ -112,6 +112,7 @@ const MOCK_EXPENSE: Expense = {
   tax_id: null,
   entry_type: "text",
   transaction_type: "outcome",
+  payment_method: "debit",
   confidence: 1.0,
   created_at: "2025-03-10T10:00:00",
 };
@@ -188,6 +189,43 @@ describe("ExpenseModal — createExpense payload", () => {
     await waitFor(() => {
       expect(createExpense).toHaveBeenCalledWith(
         expect.objectContaining({ transaction_type: "income" })
+      );
+    });
+  });
+});
+
+describe("ExpenseModal — payment_method field", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders the Payment method select", () => {
+    renderModal();
+    expect(screen.getByLabelText("Payment method")).toBeInTheDocument();
+  });
+
+  it("defaults to debit on new transaction", () => {
+    renderModal();
+    const select = screen.getByLabelText("Payment method") as HTMLSelectElement;
+    expect(select.value).toBe("debit");
+  });
+
+  it("pre-fills payment_method from existing expense", () => {
+    const creditExpense = { ...MOCK_EXPENSE, payment_method: "credit" as const };
+    renderModal(true, creditExpense);
+    const select = screen.getByLabelText("Payment method") as HTMLSelectElement;
+    expect(select.value).toBe("credit");
+  });
+
+  it("sends payment_method in the create payload", async () => {
+    const { createExpense } = await import("@/lib/api");
+    renderModal();
+    fireEvent.change(screen.getByLabelText("Amount (R$)"), { target: { value: "50" } });
+    fireEvent.change(screen.getByLabelText("Payment method"), { target: { value: "credit" } });
+    fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
+    await waitFor(() => {
+      expect(createExpense).toHaveBeenCalledWith(
+        expect.objectContaining({ payment_method: "credit" })
       );
     });
   });

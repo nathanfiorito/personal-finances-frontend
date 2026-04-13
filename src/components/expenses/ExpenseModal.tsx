@@ -20,6 +20,11 @@ const TRANSACTION_TYPE_OPTIONS = [
   { value: "income", label: "Income" },
 ];
 
+const PAYMENT_METHOD_OPTIONS = [
+  { value: "debit", label: "Debit" },
+  { value: "credit", label: "Credit" },
+];
+
 const DEFAULT_FORM: ExpenseInput = {
   amount: 0,
   date: new Date().toISOString().split("T")[0],
@@ -28,6 +33,7 @@ const DEFAULT_FORM: ExpenseInput = {
   category_id: undefined,
   entry_type: "manual",
   transaction_type: "outcome",
+  payment_method: "debit",
 };
 
 export function ExpenseModal({ open, onClose, expense, categories, onSaved }: ExpenseModalProps) {
@@ -49,6 +55,7 @@ export function ExpenseModal({ open, onClose, expense, categories, onSaved }: Ex
           category_id: expense.category_id ?? undefined,
           entry_type: expense.entry_type,
           transaction_type: expense.transaction_type ?? "outcome",
+          payment_method: expense.payment_method ?? "debit",
         });
       } else {
         setForm(DEFAULT_FORM);
@@ -159,22 +166,35 @@ export function ExpenseModal({ open, onClose, expense, categories, onSaved }: Ex
           </Select>
 
           <Select
-            label="Category"
-            value={form.category_id ?? ""}
-            onChange={(e) =>
-              update("category_id", e.target.value ? Number(e.target.value) : undefined)
-            }
+            label="Payment method"
+            value={form.payment_method}
+            onChange={(e) => update("payment_method", e.target.value as "credit" | "debit")}
+            required
           >
-            <option value="">No category</option>
-            {categories
-              .filter((c) => c.is_active)
-              .map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
+            {PAYMENT_METHOD_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </Select>
         </div>
+
+        <Select
+          label="Category"
+          value={form.category_id ?? ""}
+          onChange={(e) =>
+            update("category_id", e.target.value ? Number(e.target.value) : undefined)
+          }
+        >
+          <option value="">No category</option>
+          {categories
+            .filter((c) => c.is_active)
+            .map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+        </Select>
 
         <div className="flex gap-3 pt-2 justify-end">
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
