@@ -13,7 +13,6 @@ export interface Expense {
   tax_id: string | null;
   entry_type: string;
   transaction_type: "income" | "outcome";
-  payment_method: "credit" | "debit";
   confidence: number | null;
   created_at: string;
 }
@@ -59,7 +58,6 @@ export interface ExpenseInput {
   category_id?: number;
   entry_type: string;
   transaction_type: "income" | "outcome";
-  payment_method: "credit" | "debit";
 }
 
 export interface BffDashboardResponse {
