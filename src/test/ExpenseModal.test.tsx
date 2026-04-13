@@ -230,3 +230,26 @@ describe("ExpenseModal — payment_method field", () => {
     });
   });
 });
+
+describe("ExpenseModal — entry_type field", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("does not render an Entry type select", () => {
+    renderModal();
+    expect(screen.queryByLabelText("Entry type")).not.toBeInTheDocument();
+  });
+
+  it("sends entry_type as 'manual' in the create payload", async () => {
+    const { createExpense } = await import("@/lib/api");
+    renderModal();
+    fireEvent.change(screen.getByLabelText("Amount (R$)"), { target: { value: "50" } });
+    fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
+    await waitFor(() => {
+      expect(createExpense).toHaveBeenCalledWith(
+        expect.objectContaining({ entry_type: "manual" })
+      );
+    });
+  });
+});
