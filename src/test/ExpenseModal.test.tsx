@@ -1,15 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ExpenseModal } from "@/components/expenses/ExpenseModal";
-import { Expense } from "@/lib/api";
-
-// ─── Mocks ───────────────────────────────────────────────────────────────────
+import { CategoryOut, Expense } from "@/lib/api";
 
 vi.mock("@/lib/api", () => ({
-  getCategories: vi.fn().mockResolvedValue([
-    { id: 1, name: "Alimentação", is_active: true },
-    { id: 2, name: "Transporte", is_active: true },
-  ]),
   createExpense: vi.fn().mockResolvedValue({}),
   updateExpense: vi.fn().mockResolvedValue({}),
 }));
@@ -84,16 +78,26 @@ vi.mock("@/components/ui/Input", () => ({
   ),
 }));
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+const DEFAULT_CATEGORIES: CategoryOut[] = [
+  { id: 1, name: "Alimentação", is_active: true },
+  { id: 2, name: "Transporte", is_active: true },
+];
 
 function renderModal(
   open = true,
   expense: Expense | null = null,
   onSaved = vi.fn(),
-  onClose = vi.fn()
+  onClose = vi.fn(),
+  categories = DEFAULT_CATEGORIES
 ) {
   return render(
-    <ExpenseModal open={open} onClose={onClose} expense={expense} onSaved={onSaved} />
+    <ExpenseModal
+      open={open}
+      onClose={onClose}
+      expense={expense}
+      categories={categories}
+      onSaved={onSaved}
+    />
   );
 }
 
@@ -112,77 +116,59 @@ const MOCK_EXPENSE: Expense = {
   created_at: "2025-03-10T10:00:00",
 };
 
-// ─── Tests ───────────────────────────────────────────────────────────────────
-
 describe("ExpenseModal — transaction_type field", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders the Type select", async () => {
+  it("renders the Type select", () => {
     renderModal();
-    await waitFor(() => {
-      expect(screen.getByLabelText("Type")).toBeInTheDocument();
-    });
+    expect(screen.getByLabelText("Type")).toBeInTheDocument();
   });
 
-  it("Type select has Expense option", async () => {
+  it("Type select has Expense option", () => {
     renderModal();
-    await waitFor(() => {
-      expect(screen.getByRole("option", { name: "Expense" })).toBeInTheDocument();
-    });
+    expect(screen.getByRole("option", { name: "Expense" })).toBeInTheDocument();
   });
 
-  it("Type select has Income option", async () => {
+  it("Type select has Income option", () => {
     renderModal();
-    await waitFor(() => {
-      expect(screen.getByRole("option", { name: "Income" })).toBeInTheDocument();
-    });
+    expect(screen.getByRole("option", { name: "Income" })).toBeInTheDocument();
   });
 
-  it("defaults to Expense (outcome) on new transaction", async () => {
+  it("defaults to Expense (outcome) on new transaction", () => {
     renderModal();
-    await waitFor(() => {
-      const select = screen.getByLabelText("Type") as HTMLSelectElement;
-      expect(select.value).toBe("outcome");
-    });
+    const select = screen.getByLabelText("Type") as HTMLSelectElement;
+    expect(select.value).toBe("outcome");
   });
 
-  it("pre-fills transaction_type from existing expense", async () => {
+  it("pre-fills transaction_type from existing expense", () => {
     const incomeExpense = { ...MOCK_EXPENSE, transaction_type: "income" as const };
     renderModal(true, incomeExpense);
-    await waitFor(() => {
-      const select = screen.getByLabelText("Type") as HTMLSelectElement;
-      expect(select.value).toBe("income");
-    });
+    const select = screen.getByLabelText("Type") as HTMLSelectElement;
+    expect(select.value).toBe("income");
   });
 
-  it("title shows 'New Income' when transaction_type is income", async () => {
+  it("title shows 'New Income' when transaction_type is income", () => {
     renderModal();
-    await waitFor(() => screen.getByLabelText("Type"));
     fireEvent.change(screen.getByLabelText("Type"), { target: { value: "income" } });
     expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "New Income");
   });
 
-  it("title shows 'New Expense' when transaction_type is outcome", async () => {
+  it("title shows 'New Expense' when transaction_type is outcome", () => {
     renderModal();
-    await waitFor(() => expect(screen.getByRole("dialog")).toBeInTheDocument());
     expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "New Expense");
   });
 
-  it("title shows 'Edit Income' when editing an income", async () => {
+  it("title shows 'Edit Income' when editing an income", () => {
     const incomeExpense = { ...MOCK_EXPENSE, transaction_type: "income" as const };
     renderModal(true, incomeExpense);
-    await waitFor(() => {
-      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Income");
-    });
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Income");
   });
 
-  it("title shows 'Edit Expense' when editing an outcome", async () => {
+  it("title shows 'Edit Expense' when editing an outcome", () => {
     renderModal(true, MOCK_EXPENSE);
-    await waitFor(() => {
-      expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Expense");
-    });
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-label", "Edit Expense");
   });
 });
 
@@ -195,11 +181,8 @@ describe("ExpenseModal — createExpense payload", () => {
     const { createExpense } = await import("@/lib/api");
     renderModal();
 
-    await waitFor(() => screen.getByLabelText("Type"));
-
     fireEvent.change(screen.getByLabelText("Amount (R$)"), { target: { value: "50" } });
     fireEvent.change(screen.getByLabelText("Type"), { target: { value: "income" } });
-
     fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
 
     await waitFor(() => {

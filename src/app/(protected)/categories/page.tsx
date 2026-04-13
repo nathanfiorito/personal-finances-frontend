@@ -5,7 +5,7 @@ import { CategoryList } from "@/components/categories/CategoryList";
 async function fetchCategories(jwt: string): Promise<CategoryOut[]> {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   try {
-    const res = await fetch(`${baseUrl}/api/categories`, {
+    const res = await fetch(`${baseUrl}/api/v2/categories`, {
       headers: { Authorization: `Bearer ${jwt}` },
       cache: "no-store",
     });
