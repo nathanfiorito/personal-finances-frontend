@@ -38,7 +38,7 @@ function makeExpense(overrides: Partial<Expense> = {}): Expense {
     category: "Alimentação",
     category_id: 1,
     tax_id: null,
-    entry_type: "texto",
+    entry_type: "text",
     transaction_type: "outcome",
     confidence: 1.0,
     created_at: "2025-03-10T10:00:00",
