@@ -60,6 +60,17 @@ export interface ExpenseInput {
   transaction_type: "income" | "outcome";
 }
 
+export interface BffDashboardResponse {
+  outcome_summary: SummaryItem[];
+  income_summary: SummaryItem[];
+  transaction_count: number;
+}
+
+export interface BffExpensesResponse {
+  transactions: PaginatedExpenses;
+  categories: CategoryOut[];
+}
+
 async function getJwt(): Promise<string | null> {
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();
@@ -88,7 +99,6 @@ async function apiFetch<T>(
   });
 
   if (response.status === 401 || response.status === 403) {
-    // Sign out and redirect
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = "/login";
@@ -113,81 +123,50 @@ async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
-// ─── Expenses ────────────────────────────────────────────────────────────────
-
-export async function getExpenses(filters: ExpenseFilters = {}): Promise<PaginatedExpenses> {
-  const params = new URLSearchParams();
-  if (filters.start) params.set("start", filters.start);
-  if (filters.end) params.set("end", filters.end);
-  if (filters.category_id !== undefined) params.set("category_id", String(filters.category_id));
-  if (filters.transaction_type) params.set("transaction_type", filters.transaction_type);
-  if (filters.page !== undefined) params.set("page", String(filters.page));
-  if (filters.page_size !== undefined) params.set("page_size", String(filters.page_size));
-
-  const query = params.toString() ? `?${params.toString()}` : "";
-  return apiFetch<PaginatedExpenses>(`/api/transactions${query}`);
-}
-
-export async function getExpense(id: string): Promise<Expense> {
-  return apiFetch<Expense>(`/api/transactions/${id}`);
-}
+// ─── Transactions (write) ────────────────────────────────────────────────────
 
 export async function createExpense(data: ExpenseInput): Promise<Expense> {
-  return apiFetch<Expense>("/api/transactions", {
+  return apiFetch<Expense>("/api/v2/transactions", {
     method: "POST",
     body: JSON.stringify(data),
   });
 }
 
 export async function updateExpense(id: string, data: Partial<ExpenseInput>): Promise<Expense> {
-  return apiFetch<Expense>(`/api/transactions/${id}`, {
+  return apiFetch<Expense>(`/api/v2/transactions/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
 }
 
 export async function deleteExpense(id: string): Promise<void> {
-  return apiFetch<void>(`/api/transactions/${id}`, { method: "DELETE" });
+  return apiFetch<void>(`/api/v2/transactions/${id}`, { method: "DELETE" });
 }
 
-// ─── Categories ──────────────────────────────────────────────────────────────
-
-export async function getCategories(): Promise<CategoryOut[]> {
-  return apiFetch<CategoryOut[]>("/api/categories");
-}
+// ─── Categories (write) ──────────────────────────────────────────────────────
 
 export async function createCategory(name: string): Promise<CategoryOut> {
-  return apiFetch<CategoryOut>("/api/categories", {
+  return apiFetch<CategoryOut>("/api/v2/categories", {
     method: "POST",
     body: JSON.stringify({ name }),
   });
 }
 
 export async function updateCategory(id: number, data: Partial<CategoryOut>): Promise<CategoryOut> {
-  return apiFetch<CategoryOut>(`/api/categories/${id}`, {
+  return apiFetch<CategoryOut>(`/api/v2/categories/${id}`, {
     method: "PATCH",
     body: JSON.stringify(data),
   });
 }
 
 export async function deactivateCategory(id: number): Promise<void> {
-  return apiFetch<void>(`/api/categories/${id}`, { method: "DELETE" });
+  return apiFetch<void>(`/api/v2/categories/${id}`, { method: "DELETE" });
 }
 
 // ─── Reports ─────────────────────────────────────────────────────────────────
 
-export async function getSummary(
-  start: string,
-  end: string,
-  transaction_type?: "income" | "outcome"
-): Promise<SummaryItem[]> {
-  const params = new URLSearchParams({ start, end });
-  if (transaction_type) params.set("transaction_type", transaction_type);
-  return apiFetch<SummaryItem[]>(`/api/reports/summary?${params.toString()}`);
-}
-
 export async function getMonthly(year: number): Promise<MonthlyItem[]> {
-  return apiFetch<MonthlyItem[]>(`/api/reports/monthly?year=${year}`);
+  return apiFetch<MonthlyItem[]>(`/api/v2/reports/monthly?year=${year}`);
 }
 
 // ─── Export ──────────────────────────────────────────────────────────────────
@@ -196,7 +175,7 @@ export async function exportCsv(start: string, end: string): Promise<Blob> {
   const jwt = await getJwt();
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-  const response = await fetch(`${baseUrl}/api/export/csv?start=${start}&end=${end}`, {
+  const response = await fetch(`${baseUrl}/api/v2/export/csv?start=${start}&end=${end}`, {
     headers: jwt ? { Authorization: `Bearer ${jwt}` } : {},
   });
 
@@ -209,4 +188,19 @@ export async function exportCsv(start: string, end: string): Promise<Blob> {
 
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.blob();
+}
+
+// ─── BFF ─────────────────────────────────────────────────────────────────────
+
+export async function getBffExpenses(filters: ExpenseFilters = {}): Promise<BffExpensesResponse> {
+  const params = new URLSearchParams();
+  if (filters.start) params.set("start", filters.start);
+  if (filters.end) params.set("end", filters.end);
+  if (filters.category_id !== undefined) params.set("category_id", String(filters.category_id));
+  if (filters.transaction_type) params.set("transaction_type", filters.transaction_type);
+  if (filters.page !== undefined) params.set("page", String(filters.page));
+  if (filters.page_size !== undefined) params.set("page_size", String(filters.page_size));
+
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiFetch<BffExpensesResponse>(`/api/v2/bff/expenses${query}`);
 }

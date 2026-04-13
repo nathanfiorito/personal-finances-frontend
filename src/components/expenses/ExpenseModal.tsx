@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
-import { CategoryOut, Expense, ExpenseInput, createExpense, updateExpense, getCategories } from "@/lib/api";
+import { CategoryOut, Expense, ExpenseInput, createExpense, updateExpense } from "@/lib/api";
 import { useToast } from "@/hooks/useToast";
 
 interface ExpenseModalProps {
   open: boolean;
   onClose: () => void;
   expense?: Expense | null;
+  categories: CategoryOut[];
   onSaved: () => void;
 }
 
@@ -35,20 +36,13 @@ const DEFAULT_FORM: ExpenseInput = {
   transaction_type: "outcome",
 };
 
-export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalProps) {
+export function ExpenseModal({ open, onClose, expense, categories, onSaved }: ExpenseModalProps) {
   const { showToast } = useToast();
   const [form, setForm] = useState<ExpenseInput>(DEFAULT_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof ExpenseInput, string>>>({});
-  const [categories, setCategories] = useState<CategoryOut[]>([]);
   const [saving, setSaving] = useState(false);
 
   const isEditing = Boolean(expense);
-
-  useEffect(() => {
-    getCategories()
-      .then(setCategories)
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     if (open) {
@@ -118,12 +112,7 @@ export function ExpenseModal({ open, onClose, expense, onSaved }: ExpenseModalPr
     : form.transaction_type === "income" ? "New Income" : "New Expense";
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      title={modalTitle}
-      maxWidth="md"
-    >
+    <Modal open={open} onClose={onClose} title={modalTitle} maxWidth="md">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input

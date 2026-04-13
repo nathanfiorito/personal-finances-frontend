@@ -5,8 +5,7 @@ import {
   Expense,
   CategoryOut,
   PaginatedExpenses,
-  getExpenses,
-  getCategories,
+  getBffExpenses,
   deleteExpense,
 } from "@/lib/api";
 import { ExpenseTable } from "@/components/expenses/ExpenseTable";
@@ -47,26 +46,16 @@ export default function ExpensesPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Modals
   const [modalOpen, setModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  const loadCategories = useCallback(async () => {
-    try {
-      const cats = await getCategories();
-      setCategories(cats);
-    } catch {
-      // non-blocking
-    }
-  }, []);
-
   const loadExpenses = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await getExpenses({
+      const result = await getBffExpenses({
         start: filters.start || undefined,
         end: filters.end || undefined,
         category_id: filters.category_id ? Number(filters.category_id) : undefined,
@@ -74,7 +63,8 @@ export default function ExpensesPage() {
         page,
         page_size: PAGE_SIZE,
       });
-      setData(result);
+      setData(result.transactions);
+      setCategories(result.categories);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error loading expenses";
       showToast(msg, "error");
@@ -82,10 +72,6 @@ export default function ExpensesPage() {
       setLoading(false);
     }
   }, [filters, page, showToast]);
-
-  useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
 
   useEffect(() => {
     loadExpenses();
@@ -159,7 +145,6 @@ export default function ExpensesPage() {
   return (
     <>
       <div className="flex flex-col gap-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-neutral-900 dark:text-dark-primary">Expenses</h1>
@@ -184,7 +169,6 @@ export default function ExpensesPage() {
           </div>
         </div>
 
-        {/* Filters */}
         <ExpenseFilters
           filters={filters}
           categories={categories}
@@ -192,7 +176,6 @@ export default function ExpensesPage() {
           onReset={handleResetFilters}
         />
 
-        {/* Table */}
         <ExpenseTable
           expenses={data.items}
           total={data.total}
@@ -205,15 +188,14 @@ export default function ExpensesPage() {
         />
       </div>
 
-      {/* Expense Create/Edit Modal */}
       <ExpenseModal
         open={modalOpen}
         onClose={handleModalClose}
         expense={editingExpense}
+        categories={categories}
         onSaved={handleSaved}
       />
 
-      {/* Delete Confirmation Modal */}
       <Modal
         open={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
