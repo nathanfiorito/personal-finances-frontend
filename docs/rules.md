@@ -1,5 +1,17 @@
 # Frontend — Rules
 
+## Git workflow
+
+**Never commit directly to `main` or `develop`.**
+Always create a feature branch and open a pull request. Direct commits to `main` or `develop` are not allowed — even for documentation changes.
+
+```bash
+git checkout -b feature/<description>
+# make changes, commit
+git push origin feature/<description>
+# open PR → develop
+```
+
 ## Auth & data fetching
 
 **Do not bypass middleware auth.**
