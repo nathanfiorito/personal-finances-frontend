@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { Edit, MoreVertical, Trash } from "lucide-react";
+import Big from "big.js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,14 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import type { TransactionResponse } from "@/lib/api/types";
 import { formatDate } from "@/lib/format/format-date";
 import { formatMoney } from "@/lib/format/format-money";
@@ -32,8 +26,36 @@ export interface TransactionsListProps {
   className?: string;
 }
 
+interface DayGroup {
+  date: string;
+  transactions: TransactionResponse[];
+  total: string;
+}
+
 function displayLabel(tx: TransactionResponse): string {
   return tx.establishment ?? tx.description ?? "—";
+}
+
+function groupByDay(transactions: TransactionResponse[]): DayGroup[] {
+  const groups = new Map<string, TransactionResponse[]>();
+  for (const tx of transactions) {
+    const list = groups.get(tx.date);
+    if (list) {
+      list.push(tx);
+    } else {
+      groups.set(tx.date, [tx]);
+    }
+  }
+  const ordered = [...groups.entries()].sort(([a], [b]) => (a < b ? 1 : -1));
+  return ordered.map(([date, items]) => {
+    const total = items.reduce((sum, tx) => {
+      const signed = tx.transaction_type === "income"
+        ? new Big(tx.amount)
+        : new Big(tx.amount).neg();
+      return sum.plus(signed);
+    }, new Big(0));
+    return { date, transactions: items, total: total.toFixed(2) };
+  });
 }
 
 function AmountCell({ tx }: { tx: TransactionResponse }) {
@@ -46,6 +68,21 @@ function AmountCell({ tx }: { tx: TransactionResponse }) {
       )}
     >
       {isIncome ? "+" : "−"} {formatMoney(tx.amount)}
+    </span>
+  );
+}
+
+function DayTotal({ total }: { total: string }) {
+  const big = new Big(total);
+  const isNegative = big.lt(0);
+  return (
+    <span
+      className={cn(
+        "text-xs font-medium tabular-nums",
+        isNegative ? "text-muted-foreground" : "text-emerald-600 dark:text-emerald-400"
+      )}
+    >
+      {isNegative ? "−" : "+"} {formatMoney(big.abs().toFixed(2))}
     </span>
   );
 }
@@ -91,6 +128,39 @@ function RowActions({
   );
 }
 
+function TransactionRow({
+  transaction,
+  onEdit,
+  onDelete,
+}: {
+  transaction: TransactionResponse;
+  onEdit?: (transaction: TransactionResponse) => void;
+  onDelete?: (transaction: TransactionResponse) => void;
+}) {
+  return (
+    <li className="flex items-start justify-between gap-3 px-4 py-3 sm:px-6">
+      <div className="min-w-0 flex-1 space-y-1">
+        <p className="truncate text-sm font-medium">{displayLabel(transaction)}</p>
+        <div className="text-muted-foreground flex flex-wrap items-center gap-1.5 text-xs">
+          <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+            {transaction.category}
+          </Badge>
+          <Badge variant="secondary" className="px-1.5 py-0 text-[10px] uppercase">
+            {transaction.payment_method}
+          </Badge>
+          {transaction.description && transaction.establishment ? (
+            <span className="truncate">{transaction.description}</span>
+          ) : null}
+        </div>
+      </div>
+      <div className="flex flex-col items-end gap-1">
+        <AmountCell tx={transaction} />
+        <RowActions transaction={transaction} onEdit={onEdit} onDelete={onDelete} />
+      </div>
+    </li>
+  );
+}
+
 export function TransactionsList({
   transactions,
   isLoading,
@@ -99,6 +169,8 @@ export function TransactionsList({
   onDelete,
   className,
 }: TransactionsListProps) {
+  const groups = useMemo(() => (transactions ? groupByDay(transactions) : []), [transactions]);
+
   if (isLoading) {
     return <LoadingState className={className} />;
   }
@@ -110,81 +182,38 @@ export function TransactionsList({
   return (
     <div
       className={cn(
-        "relative",
+        "space-y-4",
         isFetching && "opacity-60 transition-opacity",
         className
       )}
     >
-      <ul className="divide-border bg-card text-card-foreground divide-y rounded-lg border sm:hidden">
-        {transactions.map((tx) => (
-          <li key={tx.id} className="flex items-start justify-between gap-3 p-4">
-            <div className="min-w-0 flex-1 space-y-1">
-              <p className="truncate text-sm font-medium">{displayLabel(tx)}</p>
-              <p className="text-muted-foreground flex items-center gap-2 text-xs">
-                <span>{formatDate(tx.date)}</span>
-                <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
-                  {tx.category}
-                </Badge>
-                <Badge variant="secondary" className="px-1.5 py-0 text-[10px] uppercase">
-                  {tx.payment_method}
-                </Badge>
-              </p>
+      {groups.map((group) => (
+        <section
+          key={group.date}
+          className="bg-card text-card-foreground overflow-hidden rounded-lg border"
+        >
+          <header className="border-border bg-muted/30 flex items-center justify-between gap-3 border-b px-4 py-2 sm:px-6">
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-sm font-medium tabular-nums">{formatDate(group.date)}</h3>
+              <span className="text-muted-foreground text-xs">
+                {group.transactions.length}{" "}
+                {group.transactions.length === 1 ? "transaction" : "transactions"}
+              </span>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <AmountCell tx={tx} />
-              <RowActions transaction={tx} onEdit={onEdit} onDelete={onDelete} />
-            </div>
-          </li>
-        ))}
-      </ul>
-
-      <div className="bg-card text-card-foreground hidden rounded-lg border sm:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="pl-6">Date</TableHead>
-              <TableHead>Establishment</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="w-10 pr-6 text-right">
-                <span className="sr-only">Actions</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((tx) => (
-              <TableRow key={tx.id}>
-                <TableCell className="text-muted-foreground pl-6 text-xs whitespace-nowrap">
-                  {formatDate(tx.date)}
-                </TableCell>
-                <TableCell className="max-w-[260px]">
-                  <div className="truncate">{displayLabel(tx)}</div>
-                  {tx.description && tx.establishment ? (
-                    <div className="text-muted-foreground truncate text-xs">
-                      {tx.description}
-                    </div>
-                  ) : null}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{tx.category}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary" className="uppercase">
-                    {tx.payment_method}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <AmountCell tx={tx} />
-                </TableCell>
-                <TableCell className="pr-4 text-right">
-                  <RowActions transaction={tx} onEdit={onEdit} onDelete={onDelete} />
-                </TableCell>
-              </TableRow>
+            <DayTotal total={group.total} />
+          </header>
+          <ul className="divide-border divide-y">
+            {group.transactions.map((tx) => (
+              <TransactionRow
+                key={tx.id}
+                transaction={tx}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             ))}
-          </TableBody>
-        </Table>
-      </div>
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }
@@ -205,18 +234,29 @@ function EmptyState({ className }: { className?: string }) {
 
 function LoadingState({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-card rounded-lg border", className)}>
-      <ul className="divide-border divide-y">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <li key={i} className="flex items-center justify-between gap-3 px-6 py-4">
-            <div className="flex-1 space-y-1.5">
-              <Skeleton className="h-4 w-2/3" />
-              <Skeleton className="h-3 w-1/3" />
-            </div>
-            <Skeleton className="h-4 w-20" />
-          </li>
-        ))}
-      </ul>
+    <div className={cn("space-y-4", className)}>
+      {Array.from({ length: 2 }).map((_, groupIndex) => (
+        <div
+          key={groupIndex}
+          className="bg-card overflow-hidden rounded-lg border"
+        >
+          <div className="border-border bg-muted/30 flex items-center justify-between gap-3 border-b px-4 py-2 sm:px-6">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <ul className="divide-border divide-y">
+            {Array.from({ length: 3 }).map((__, i) => (
+              <li key={i} className="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-3 w-1/3" />
+                </div>
+                <Skeleton className="h-4 w-20" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }

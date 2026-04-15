@@ -41,12 +41,13 @@ export const AmountInput = forwardRef<HTMLInputElement, AmountInputProps>(functi
   ref
 ) {
   const isControlled = value !== undefined;
+  const [isFocused, setIsFocused] = useState(false);
   const [lastSyncedValue, setLastSyncedValue] = useState<string | undefined>(value);
   const [display, setDisplay] = useState<string>(() =>
     formatDisplay(value ?? defaultValue ?? "")
   );
 
-  if (isControlled && value !== lastSyncedValue) {
+  if (isControlled && !isFocused && value !== lastSyncedValue) {
     setLastSyncedValue(value);
     setDisplay(formatDisplay(value ?? ""));
   }
@@ -57,15 +58,17 @@ export const AmountInput = forwardRef<HTMLInputElement, AmountInputProps>(functi
       inputMode="decimal"
       type="text"
       value={display}
+      onFocus={() => setIsFocused(true)}
       onChange={(event) => {
         const raw = event.target.value;
         setDisplay(raw);
-        if (!onChange) return;
-        onChange(normalizeInput(raw));
+        onChange?.(normalizeInput(raw));
       }}
       onBlur={() => {
+        setIsFocused(false);
         const normalized = normalizeInput(display);
         setDisplay(formatDisplay(normalized));
+        setLastSyncedValue(normalized);
         onChange?.(normalized);
         onBlur?.();
       }}

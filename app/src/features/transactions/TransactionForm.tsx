@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/app/DatePicker";
 import type {
   CategoryResponse,
   TransactionCreateRequest,
@@ -145,11 +146,17 @@ export function TransactionForm({
 
           <Field data-invalid={errors.date ? "true" : undefined}>
             <FieldLabel htmlFor="tx-date">Date</FieldLabel>
-            <Input
-              id="tx-date"
-              type="date"
-              aria-invalid={errors.date ? "true" : undefined}
-              {...register("date")}
+            <Controller
+              control={control}
+              name="date"
+              render={({ field }) => (
+                <DatePicker
+                  id="tx-date"
+                  value={field.value}
+                  onChange={field.onChange}
+                  aria-invalid={errors.date ? "true" : undefined}
+                />
+              )}
             />
             <FieldError
               errors={errors.date ? [{ message: errors.date.message }] : undefined}
