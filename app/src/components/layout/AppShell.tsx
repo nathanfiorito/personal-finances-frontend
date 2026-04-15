@@ -1,7 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/lib/auth/use-auth";
 import { useTheme } from "@/lib/theme/use-theme";
-import { cn } from "@/lib/utils/cn";
+import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", end: true },

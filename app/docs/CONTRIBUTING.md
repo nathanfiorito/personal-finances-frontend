@@ -2,30 +2,17 @@
 
 This app is being built as a clean-sheet replacement for the Next.js app in `../src/`. Until cut-over both trees coexist in this repo — **everything in `app/` is the new canonical project**; `../src/` is a legacy reference only and must not be imported from here.
 
-## Golden workflow: Figma → Storybook → code
+## Golden workflow: Storybook-first
 
 Every new component follows the same order:
 
-1. **Figma first.** The component is designed in Figma and published as a node. The designer (or you) shares a link like `https://figma.com/design/<fileKey>/...?node-id=<nodeId>`.
-2. **Pull design context from the Figma MCP.** Use the tools below to pull the real intent, tokens, and reference markup into the conversation:
-   - `mcp__claude_ai_Figma__get_design_context` — screenshot + code hints + tokens for the node
-   - `mcp__claude_ai_Figma__get_variable_defs` — Figma variables so colors/spacing map 1:1 onto Tailwind tokens
-   - `mcp__claude_ai_Figma__search_design_system` + `mcp__claude_ai_Figma__get_code_connect_map` — check whether the component is already mapped to an existing file
-   - `mcp__claude_ai_Figma__get_screenshot` — fallback when the design context call times out
-3. **Story first, code second.** Write the `*.stories.tsx` file using shadcn primitives only (no one-off styling) and verify every state in Storybook:
+1. **Story first, code second.** Write the `*.stories.tsx` file using shadcn primitives only (no one-off styling) and verify every state in Storybook:
    - default, hover, focus, active, disabled
    - loading, empty, error
    - mobile (`375px`), tablet (`768px`), desktop (`1440px`)
    - light and dark theme
-4. **Review in Storybook against Figma.** Only after the story matches the Figma node does the component get wired into a feature page.
-5. **Register the mapping.** Once merged, call `mcp__claude_ai_Figma__add_code_connect_map` so future Figma reads resolve back to this file.
-
-### Fallback when Figma MCP is unavailable
-
-If the MCP session isn't authenticated or the file isn't accessible:
-
-- Work from a static export / screenshot instead.
-- Never block development waiting for MCP — design tokens live in code (`tailwind.config.ts`, `src/index.css`) so they don't depend on live Figma.
+2. **Review in Storybook.** The component is only wired into a feature page after the user has signed off on the story.
+3. **shadcn is the baseline.** Primitives (Button, Input, Dialog…) come from `shadcn/ui` as-is. Composite components (TransactionRow, KpiCard, LoginForm…) are built from those primitives and get their own stories.
 
 ## Component rules
 
