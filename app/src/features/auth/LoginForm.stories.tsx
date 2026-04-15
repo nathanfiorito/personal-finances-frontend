@@ -23,7 +23,7 @@ function MockAuth({ value, children }: { value: AuthState; children: ReactNode }
 
 function StoryShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-[420px] items-center justify-center">
+    <main className="bg-background text-foreground flex min-h-screen w-full items-center justify-center p-6">
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-xl">Personal Finances</CardTitle>
@@ -31,14 +31,14 @@ function StoryShell({ children }: { children: ReactNode }) {
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>
-    </div>
+    </main>
   );
 }
 
 const meta: Meta<typeof LoginForm> = {
   title: "Features/Auth/LoginForm",
   component: LoginForm,
-  parameters: { layout: "centered" },
+  parameters: { layout: "fullscreen" },
   tags: ["autodocs"],
 };
 

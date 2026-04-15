@@ -107,6 +107,11 @@
   * {
     @apply border-border;
   }
+  html,
+  body,
+  #root {
+    @apply h-full min-h-screen w-full;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }

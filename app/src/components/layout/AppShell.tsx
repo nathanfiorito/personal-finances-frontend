@@ -10,14 +10,16 @@ const NAV_ITEMS = [
   { to: "/reports", label: "Reports" },
 ];
 
+const CONTENT = "mx-auto w-full max-w-screen-2xl px-4 sm:px-6 lg:px-8";
+
 export function AppShell() {
   const { logout } = useAuth();
   const { resolvedTheme, toggle } = useTheme();
 
   return (
-    <div className="bg-background text-foreground flex min-h-screen flex-col">
-      <header className="border-border sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
-        <div className="container flex h-14 items-center justify-between gap-4">
+    <div className="bg-background text-foreground flex min-h-screen w-full flex-col">
+      <header className="border-border bg-background/80 sticky top-0 z-10 w-full border-b backdrop-blur">
+        <div className={cn(CONTENT, "flex h-14 items-center justify-between gap-4")}>
           <span className="text-base font-semibold">Personal Finances</span>
           <nav className="hidden items-center gap-1 md:flex">
             {NAV_ITEMS.map((item) => (
@@ -56,7 +58,7 @@ export function AppShell() {
             </button>
           </div>
         </div>
-        <nav className="container flex gap-1 overflow-x-auto pb-2 md:hidden">
+        <nav className={cn(CONTENT, "flex gap-1 overflow-x-auto pb-2 md:hidden")}>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
@@ -76,8 +78,10 @@ export function AppShell() {
           ))}
         </nav>
       </header>
-      <main className="container flex-1 py-6">
-        <Outlet />
+      <main className="flex w-full flex-1 flex-col">
+        <div className={cn(CONTENT, "flex-1 py-6 lg:py-10")}>
+          <Outlet />
+        </div>
       </main>
     </div>
   );

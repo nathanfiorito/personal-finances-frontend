@@ -66,7 +66,7 @@ const preview: Preview = {
       return (
         <QueryClientProvider client={queryClient}>
           <MemoryRouter>
-            <div className="bg-background text-foreground min-h-screen p-6">
+            <div className="bg-background text-foreground min-h-screen w-full">
               <Story />
             </div>
           </MemoryRouter>
