@@ -127,9 +127,18 @@ See `docs/api-conventions.md` for the full endpoint map.
 
 ## Storybook-First Workflow
 
-Every new feature/composite component ships with a `*.stories.tsx`
-colocated next to it. See `docs/CONTRIBUTING.md` for the review workflow
-(story first → review in Storybook → wire into a page).
+Every new component, feature, or page **must** be designed in Storybook
+first and submitted to the user for approval before being wired into the
+app. Workflow: build the `*.stories.tsx` colocated next to the component
+→ run `npm run storybook` → share the story with the user → only after
+explicit approval proceed to integrate it into a route/page.
+
+See `docs/CONTRIBUTING.md` for the detailed review workflow.
+
+## Testing Standards
+
+- Every change must ship with unit **and** integration tests covering the new/modified code paths (Vitest + Testing Library for unit/component, Playwright for e2e integration).
+- Minimum test coverage: **80%**, measured via `npm run test -- --coverage`. Do not merge work that drops below this threshold.
 
 ## Environment Variables
 
