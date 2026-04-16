@@ -16,6 +16,8 @@ export interface TransactionResponse {
   payment_method: PaymentMethod;
   confidence: number;
   created_at: string;
+  card_id: number | null;
+  card_alias: string | null;
 }
 
 export interface TransactionCreateRequest {
@@ -28,6 +30,7 @@ export interface TransactionCreateRequest {
   establishment?: string;
   description?: string;
   tax_id?: string;
+  card_id?: number;
 }
 
 export type TransactionUpdateRequest = Partial<TransactionCreateRequest>;
@@ -89,6 +92,73 @@ export interface LoginRequest {
 export interface LoginResponse {
   token: string;
   expires_in: number;
+}
+
+export interface CardResponse {
+  id: number;
+  alias: string;
+  bank: string;
+  last_four_digits: string;
+  closing_day: number;
+  due_day: number;
+  is_active: boolean;
+}
+
+export interface CardCreateRequest {
+  alias: string;
+  bank: string;
+  last_four_digits: string;
+  closing_day: number;
+  due_day: number;
+}
+
+export interface InvoiceTransactionResponse {
+  id: string;
+  amount: string;
+  date: string;
+  establishment: string | null;
+  description: string | null;
+  category: string;
+  category_id: number;
+}
+
+export interface InvoiceResponse {
+  card_id: number;
+  period_start: string;
+  period_end: string;
+  closing_date: string;
+  due_date: string;
+  total: string;
+  transactions: InvoiceTransactionResponse[];
+}
+
+export interface InvoiceDailyEntry {
+  date: string;
+  amount: string;
+  accumulated: string;
+}
+
+export interface InvoicePeriodSummary {
+  closing_date: string;
+  due_date: string;
+  total: string;
+  daily: InvoiceDailyEntry[];
+}
+
+export interface InvoiceTimelineResponse {
+  current: InvoicePeriodSummary;
+  previous: InvoicePeriodSummary;
+}
+
+export interface InvoicePredictionResponse {
+  predicted_total: string;
+  current_total: string;
+  days_remaining: number;
+  daily_average: string;
+  generated_at: string;
+  confidence: string;
+  projected_remaining: string;
+  based_on_invoices: number;
 }
 
 export class ApiError extends Error {
