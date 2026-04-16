@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import {
   Command,
@@ -40,7 +40,7 @@ export function BankCombobox({
   const bankNames = useMemo(() => getBankNames(), []);
 
   // Sync inputValue when outer value changes (e.g. form reset)
-  useMemo(() => {
+  useEffect(() => {
     setInputValue(value);
   }, [value]);
 

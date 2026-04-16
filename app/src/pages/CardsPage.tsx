@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { CreditCard, Loader2 } from "lucide-react";
 import {
@@ -48,13 +48,22 @@ type DialogMode = "create" | "edit";
 
 export default function CardsPage() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
+  const [userSelectedCardId, setUserSelectedCardId] = useState<number | null>(null);
   const [mode, setMode] = useState<DialogMode | null>(null);
   const [editingCard, setEditingCard] = useState<CardResponse | null>(null);
   const [deletingCard, setDeletingCard] = useState<CardResponse | null>(null);
 
   const cardsQuery = useCards();
-  const cards = cardsQuery.data ?? [];
+  const cards = useMemo(() => cardsQuery.data ?? [], [cardsQuery.data]);
+
+  // Derive effective selected card: user pick, or auto-select first card
+  const cardIds = useMemo(() => cards.map((c) => c.id), [cards]);
+  const selectedCardId = useMemo(() => {
+    if (userSelectedCardId !== null && cardIds.includes(userSelectedCardId)) {
+      return userSelectedCardId;
+    }
+    return cardIds.length > 0 ? cardIds[0] : null;
+  }, [userSelectedCardId, cardIds]);
 
   const cardSelected = selectedCardId !== null;
   const invoiceQuery = useCurrentInvoice(selectedCardId!, cardSelected);
@@ -64,13 +73,6 @@ export default function CardsPage() {
   const createMutation = useCreateCard();
   const updateMutation = useUpdateCard();
   const deleteMutation = useDeleteCard();
-
-  // Auto-select first card when cards load and nothing is selected
-  useEffect(() => {
-    if (selectedCardId === null && cards.length > 0) {
-      setSelectedCardId(cards[0].id);
-    }
-  }, [cards, selectedCardId]);
 
   const openCreate = useCallback(() => {
     setEditingCard(null);
@@ -97,7 +99,7 @@ export default function CardsPage() {
         const newCard = await createMutation.mutateAsync(values);
         toast.success("Card added");
         closeForm();
-        setSelectedCardId(newCard.id);
+        setUserSelectedCardId(newCard.id);
       }
     },
     [mode, editingCard, createMutation, updateMutation, closeForm]
@@ -109,7 +111,7 @@ export default function CardsPage() {
       await deleteMutation.mutateAsync(deletingCard.id);
       toast.success("Card deleted");
       if (selectedCardId === deletingCard.id) {
-        setSelectedCardId(null);
+        setUserSelectedCardId(null);
       }
       setDeletingCard(null);
     } catch (err) {
@@ -153,7 +155,7 @@ export default function CardsPage() {
       <CardCarousel
         cards={cards}
         selectedCardId={selectedCardId}
-        onSelectCard={setSelectedCardId}
+        onSelectCard={setUserSelectedCardId}
         onAddCard={openCreate}
         onEditCard={openEdit}
         onDeleteCard={(card) => setDeletingCard(card)}

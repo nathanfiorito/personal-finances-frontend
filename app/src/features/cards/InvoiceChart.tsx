@@ -12,7 +12,6 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { InvoiceDailyEntry, InvoicePredictionResponse, InvoiceTimelineResponse } from "@/lib/api/types";
 import { formatDate } from "@/lib/format/format-date";
