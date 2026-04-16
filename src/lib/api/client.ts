@@ -1,78 +1,134 @@
-"use client";
+import { ApiError } from "./types";
 
-import { createClient } from "@/lib/supabase/client";
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+type QueryValue = string | number | boolean | null | undefined;
+export type QueryParams = Record<string, QueryValue>;
 
-async function getJwt(): Promise<string | null> {
-  const supabase = createClient();
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
+interface RequestOptions {
+  query?: QueryParams;
+  signal?: AbortSignal;
+  headers?: Record<string, string>;
+  expect?: "json" | "blob" | "void";
 }
 
-async function handleUnauthorized(): Promise<never> {
-  const supabase = createClient();
-  await supabase.auth.signOut();
-  window.location.href = "/login";
-  throw new Error("Unauthorized");
+export interface ApiClientConfig {
+  baseUrl: string;
+  getToken: () => string | null;
+  onUnauthorized?: () => void;
+  fetchImpl?: typeof fetch;
 }
 
-export async function clientFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const jwt = await getJwt();
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(jwt ? { Authorization: `Bearer ${jwt}` } : {}),
-      ...(options.headers as Record<string, string> | undefined),
-    },
-  });
+export interface ApiClient {
+  get<T = unknown>(path: string, opts?: RequestOptions): Promise<T>;
+  post<T = unknown>(path: string, body?: unknown, opts?: RequestOptions): Promise<T>;
+  put<T = unknown>(path: string, body?: unknown, opts?: RequestOptions): Promise<T>;
+  patch<T = unknown>(path: string, body?: unknown, opts?: RequestOptions): Promise<T>;
+  del<T = unknown>(path: string, opts?: RequestOptions): Promise<T>;
+}
 
-  if (res.status === 401 || res.status === 403) return handleUnauthorized();
-  if (!res.ok) {
-    let message = `HTTP ${res.status}`;
-    try {
-      const body = await res.json();
-      message = body.detail || body.message || message;
-    } catch {}
-    throw new Error(message);
+function buildUrl(baseUrl: string, path: string, query?: QueryParams): string {
+  const url = new URL(path, baseUrl);
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value === undefined || value === null) continue;
+      url.searchParams.set(key, String(value));
+    }
   }
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
+  return url.toString();
 }
 
-// Transactions
-export async function createTransaction(data: object) {
-  return clientFetch("/api/v2/transactions", { method: "POST", body: JSON.stringify(data) });
-}
-export async function updateTransaction(id: string, data: object) {
-  return clientFetch(`/api/v2/transactions/${id}`, { method: "PUT", body: JSON.stringify(data) });
-}
-export async function deleteTransaction(id: string) {
-  return clientFetch(`/api/v2/transactions/${id}`, { method: "DELETE" });
+async function parseErrorBody(response: Response): Promise<{
+  message: string;
+  code: string | null;
+  details: unknown;
+}> {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) {
+    try {
+      const body = (await response.json()) as {
+        message?: string;
+        error?: string;
+        code?: string;
+        details?: unknown;
+      };
+      return {
+        message: body.message ?? body.error ?? response.statusText,
+        code: body.code ?? null,
+        details: body.details ?? body,
+      };
+    } catch {
+      return { message: response.statusText, code: null, details: null };
+    }
+  }
+  const text = await response.text().catch(() => "");
+  return {
+    message: text || response.statusText,
+    code: null,
+    details: null,
+  };
 }
 
-// Categories
-export async function createCategory(name: string) {
-  return clientFetch("/api/v2/categories", { method: "POST", body: JSON.stringify({ name }) });
-}
-export async function updateCategory(id: number, data: object) {
-  return clientFetch(`/api/v2/categories/${id}`, { method: "PATCH", body: JSON.stringify(data) });
-}
-export async function deactivateCategory(id: number) {
-  return clientFetch(`/api/v2/categories/${id}`, { method: "DELETE" });
-}
+export function createApiClient(config: ApiClientConfig): ApiClient {
+  const fetchImpl = config.fetchImpl ?? globalThis.fetch.bind(globalThis);
 
-// CSV export (returns Blob, not JSON)
-export async function exportCsv(start: string, end: string): Promise<Blob> {
-  const jwt = await getJwt();
-  const res = await fetch(`${BASE_URL}/api/v2/export/csv?start=${start}&end=${end}`, {
-    headers: jwt ? { Authorization: `Bearer ${jwt}` } : {},
-  });
-  if (res.status === 401 || res.status === 403) return handleUnauthorized();
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.blob();
+  async function request<T>(
+    method: HttpMethod,
+    path: string,
+    body: unknown,
+    opts: RequestOptions = {}
+  ): Promise<T> {
+    const url = buildUrl(config.baseUrl, path, opts.query);
+
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+      ...opts.headers,
+    };
+
+    const token = config.getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    let serializedBody: BodyInit | undefined;
+    if (body !== undefined && body !== null) {
+      headers["Content-Type"] = "application/json";
+      serializedBody = JSON.stringify(body);
+    }
+
+    const response = await fetchImpl(url, {
+      method,
+      headers,
+      body: serializedBody,
+      signal: opts.signal,
+    });
+
+    if (response.status === 401) {
+      config.onUnauthorized?.();
+    }
+
+    if (!response.ok) {
+      const { message, code, details } = await parseErrorBody(response);
+      throw new ApiError({ status: response.status, message, code, details });
+    }
+
+    const expect = opts.expect ?? "json";
+    if (expect === "void" || response.status === 204) {
+      return undefined as T;
+    }
+    if (expect === "blob") {
+      return (await response.blob()) as T;
+    }
+
+    const text = await response.text();
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
+
+  return {
+    get: (path, opts) => request("GET", path, undefined, opts),
+    post: (path, body, opts) => request("POST", path, body, opts),
+    put: (path, body, opts) => request("PUT", path, body, opts),
+    patch: (path, body, opts) => request("PATCH", path, body, opts),
+    del: (path, opts) => request("DELETE", path, undefined, opts),
+  };
 }

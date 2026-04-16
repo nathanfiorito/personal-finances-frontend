@@ -67,6 +67,19 @@ jobs:
       - run: npm ci
       - run: npm run lint
 
+  typecheck:
+    needs: preflight
+    if: needs.preflight.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run typecheck
+
   test:
     needs: preflight
     if: needs.preflight.outputs.skip != 'true'
@@ -85,9 +98,7 @@ jobs:
     if: needs.preflight.outputs.skip != 'true'
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
-      NEXT_PUBLIC_API_BASE_URL: https://placeholder-api.example.com
+      VITE_API_BASE_URL: https://placeholder-api.example.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -97,8 +108,21 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  storybook:
+    needs: preflight
+    if: needs.preflight.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build-storybook
+
   auto-pr:
-    needs: [lint, test, build]
+    needs: [lint, typecheck, test, build, storybook]
     if: |
       github.event_name == 'push' && (
         startsWith(github.ref_name, 'feature/') ||

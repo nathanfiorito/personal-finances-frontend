@@ -1,49 +1,53 @@
 # personal-finances-frontend
 
-Next.js web dashboard for viewing and managing personal expenses. Connects to the FastAPI backend via REST API with Supabase JWT auth.
+React SPA for the Personal Finances project. Dashboard, transactions,
+categories, and reports, all pulling from the Java backend REST API.
 
 ## Stack
 
-| Component | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router), React 19 |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Charts | Recharts |
-| Auth | Supabase Auth (SSR) |
+Vite 8 · React 19 · TypeScript · React Router 7 · TanStack Query 5 ·
+Tailwind CSS 4 · shadcn/ui · react-hook-form + zod · recharts · big.js ·
+Vitest · Playwright · Storybook 10
 
-## Setup
+## Quick start
 
 ```bash
 npm install
-cp .env.example .env.local
+cp .env.example .env.local    # set VITE_API_BASE_URL
+npm run dev                    # http://localhost:3000
 ```
 
-## Running
+Log in with the admin credentials configured on the backend (see
+`personal-finances-backend/CLAUDE.md`).
 
-```bash
-npm run dev    # dev server
-npm run build  # production build
-```
+## Scripts
 
-## Testing & Linting
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Vite dev server (port 3000) |
+| `npm run build` | Type-check and build to `dist/` |
+| `npm run preview` | Serve the built app on port 4173 |
+| `npm run lint` | ESLint (flat config) |
+| `npm run typecheck` | `tsc -b --noEmit` |
+| `npm run test` | Vitest (unit + component) |
+| `npm run test:watch` | Vitest watch mode |
+| `npm run test:e2e` | Playwright against the dev server |
+| `npm run storybook` | Storybook dev server (port 6006) |
+| `npm run build-storybook` | Static Storybook |
+| `npm run format` | Prettier --write |
 
-```bash
-npm run test       # Vitest
-npm run test:watch # Vitest watch
-npm run lint       # ESLint
-```
+## Environment
 
-## Seed
+Single variable: `VITE_API_BASE_URL`, pointing at the backend. In production
+this is set per environment in the Vercel project settings.
 
-```bash
-npm run seed  # create the Supabase auth user
-```
+## Project layout
 
-## Documentation
+See `CLAUDE.md` for the folder-by-folder breakdown, and `docs/CONTRIBUTING.md`
+for the Storybook-first workflow.
 
-Full documentation lives in [`personal-finances-doc/`](../personal-finances-doc/):
+## Deployment
 
-- [Architecture](../personal-finances-doc/content/architecture/frontend.md) — pages, auth flow, component patterns
-- [API Reference](../personal-finances-doc/content/api-reference/) — REST endpoints consumed by this app
-- [Roadmap](../personal-finances-doc/content/roadmap/) — milestones and future plans
+Vercel, framework preset **Vite**, output directory `dist`. The included
+`vercel.json` adds the SPA rewrite (`/(.*) → /index.html`) so client-side
+routes survive direct loads and refreshes.
