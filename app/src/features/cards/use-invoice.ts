@@ -12,6 +12,6 @@ export function useCurrentInvoice(cardId: number, enabled = true) {
     queryFn: () =>
       apiClient.get<InvoiceResponse>(endpoints.cards.invoiceCurrent(cardId)),
     enabled: enabled && cardId > 0 && isAuthenticated,
-    staleTime: 5 * 60_000,
+    staleTime: 30_000,
   });
 }

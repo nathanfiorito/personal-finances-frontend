@@ -14,6 +14,6 @@ export function useInvoiceTimeline(cardId: number, enabled = true) {
         endpoints.cards.invoiceTimeline(cardId)
       ),
     enabled: enabled && cardId > 0 && isAuthenticated,
-    staleTime: 5 * 60_000,
+    staleTime: 30_000,
   });
 }
