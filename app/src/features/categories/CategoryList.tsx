@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Edit, MoreVertical, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +12,8 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CategoryResponse } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
+
+const nameCollator = new Intl.Collator("pt-BR", { sensitivity: "base" });
 
 export interface CategoryListProps {
   categories: CategoryResponse[] | undefined;
@@ -68,11 +71,17 @@ export function CategoryList({
   onDelete,
   className,
 }: CategoryListProps) {
+  const sorted = useMemo(
+    () =>
+      categories ? [...categories].sort((a, b) => nameCollator.compare(a.name, b.name)) : undefined,
+    [categories]
+  );
+
   if (isLoading) {
     return <LoadingState className={className} />;
   }
 
-  if (!categories || categories.length === 0) {
+  if (!sorted || sorted.length === 0) {
     return <EmptyState className={className} />;
   }
 
@@ -83,7 +92,7 @@ export function CategoryList({
         className
       )}
     >
-      {categories.map((category) => (
+      {sorted.map((category) => (
         <li
           key={category.id}
           className="bg-card text-card-foreground border-border flex items-center justify-between gap-3 rounded-lg border px-4 py-3"
