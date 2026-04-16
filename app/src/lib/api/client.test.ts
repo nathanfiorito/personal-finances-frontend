@@ -137,8 +137,13 @@ describe("createApiClient", () => {
     });
 
     const result = await client.get<Blob>("/api/v1/export/csv", { expect: "blob" });
-    expect(result).toBeInstanceOf(Blob);
+    // Don't use instanceof Blob — response.blob() returns a Blob from
+    // Node's undici while the global Blob under jsdom is a different class,
+    // so they don't share a prototype. Check the structural shape instead.
+    expect(result).toBeDefined();
     expect(result.size).toBe(csv.length);
+    expect(result.type).toContain("text/csv");
+    expect(typeof result.arrayBuffer).toBe("function");
   });
 
   it("returns undefined on 204 responses", async () => {
