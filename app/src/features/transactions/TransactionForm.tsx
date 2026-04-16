@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useCards } from "@/features/cards/use-cards";
+import { CardCombobox } from "@/features/cards/CardCombobox";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -54,6 +56,7 @@ function valuesFromTransaction(
     date: transaction?.date ?? todayIso(),
     establishment: transaction?.establishment ?? "",
     description: transaction?.description ?? "",
+    card_id: transaction?.card_id ?? null,
   };
 }
 
@@ -67,6 +70,7 @@ function toPayload(values: TransactionFormValues): TransactionCreateRequest {
     establishment: values.establishment ? values.establishment : undefined,
     description: values.description ? values.description : undefined,
     entry_type: "manual",
+    card_id: values.card_id ?? undefined,
   };
 }
 
@@ -78,6 +82,7 @@ export function TransactionForm({
   submitLabel,
 }: TransactionFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const { data: cards = [] } = useCards();
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionFormSchema),
     defaultValues: valuesFromTransaction(initial),
@@ -89,12 +94,22 @@ export function TransactionForm({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = form;
+
+  const paymentMethod = watch("payment_method");
 
   useEffect(() => {
     reset(valuesFromTransaction(initial));
   }, [initial, reset]);
+
+  useEffect(() => {
+    if (paymentMethod === "debit") {
+      setValue("card_id", null);
+    }
+  }, [paymentMethod, setValue]);
 
   const submit = handleSubmit(async (values) => {
     setServerError(null);
@@ -225,6 +240,28 @@ export function TransactionForm({
             />
           </Field>
         </div>
+
+        {paymentMethod === "credit" ? (
+          <Field data-invalid={errors.card_id ? "true" : undefined}>
+            <FieldLabel htmlFor="tx-card">Card</FieldLabel>
+            <Controller
+              control={control}
+              name="card_id"
+              render={({ field }) => (
+                <CardCombobox
+                  id="tx-card"
+                  cards={cards}
+                  value={field.value}
+                  onChange={field.onChange}
+                  aria-invalid={errors.card_id ? "true" : undefined}
+                />
+              )}
+            />
+            <FieldError
+              errors={errors.card_id ? [{ message: errors.card_id.message }] : undefined}
+            />
+          </Field>
+        ) : null}
 
         <Field>
           <FieldLabel htmlFor="tx-establishment">Establishment</FieldLabel>

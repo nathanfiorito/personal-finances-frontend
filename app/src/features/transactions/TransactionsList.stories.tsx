@@ -145,6 +145,8 @@ const LARGE_SAMPLE: TransactionResponse[] = (() => {
       payment_method: paymentMethods[i % 2],
       confidence: 0.95,
       created_at: `2026-04-${String(day).padStart(2, "0")}T09:00:00Z`,
+      card_id: null,
+      card_alias: null,
     };
   });
 })();
