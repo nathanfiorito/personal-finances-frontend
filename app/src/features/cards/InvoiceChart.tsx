@@ -83,8 +83,8 @@ function CurrentInvoiceTab({ daily }: { daily: InvoiceDailyEntry[] }) {
         />
         <Tooltip
           contentStyle={TOOLTIP_STYLE}
-          formatter={(value: number) => [formatMoney(String(value)), "Accumulated"]}
-          labelFormatter={(label: string) => `Date: ${label}`}
+          formatter={(value) => [formatMoney(String(value)), "Accumulated"]}
+          labelFormatter={(label) => `Date: ${label}`}
         />
         <Area
           type="monotone"
@@ -175,11 +175,11 @@ function CompareTab({
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            formatter={(value: number, name: string) => [
+            formatter={(value, name) => [
               formatMoney(String(value)),
               name === "current" ? "Current" : "Previous",
             ]}
-            labelFormatter={(label: number) => `Day ${label}`}
+            labelFormatter={(label) => `Day ${label}`}
           />
           <Line
             type="monotone"
@@ -332,11 +332,11 @@ function PredictionTab({
           />
           <Tooltip
             contentStyle={TOOLTIP_STYLE}
-            formatter={(value: number, name: string) => [
+            formatter={(value, name) => [
               formatMoney(String(value)),
               name === "actual" ? "Actual" : "Projected",
             ]}
-            labelFormatter={(label: number) => `Day ${label}`}
+            labelFormatter={(label) => `Day ${label}`}
           />
           <Line
             type="monotone"

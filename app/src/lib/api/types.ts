@@ -16,8 +16,8 @@ export interface TransactionResponse {
   payment_method: PaymentMethod;
   confidence: number;
   created_at: string;
-  card_id: number | null;
-  card_alias: string | null;
+  card_id?: number | null;
+  card_alias?: string | null;
 }
 
 export interface TransactionCreateRequest {
