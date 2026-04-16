@@ -148,6 +148,11 @@ function TransactionRow({
           <Badge variant="secondary" className="px-1.5 py-0 text-[10px] uppercase">
             {transaction.payment_method}
           </Badge>
+          {transaction.card_alias ? (
+            <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+              {transaction.card_alias}
+            </Badge>
+          ) : null}
           {transaction.description && transaction.establishment ? (
             <span className="truncate">{transaction.description}</span>
           ) : null}
