@@ -13,6 +13,7 @@ function useInvalidateTransactions() {
   return () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
     queryClient.invalidateQueries({ queryKey: ["reports"] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
   };
 }
 
