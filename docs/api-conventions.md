@@ -11,7 +11,7 @@ The Java backend at `../../personal-finances-backend/` is the source of truth. T
 | Null fields | Omitted when absent. Never send `null` in a create request for a field you want to leave untouched. |
 | Pagination | Query params `page` (zero-based, default 0) and `page_size` (default 20, max 100). Response envelope: `{ items, total, page, page_size }`. |
 | Auth | `POST /api/auth/login` → `{ token, expiresIn }`. Send `Authorization: Bearer <token>` on every `/api/v1/*` request. 401 → clear token and redirect to login. |
-| Errors | Backend returns structured errors; client normalizes to `ApiError { status, code, message, details }`. |
+| Errors | Backend returns a standardised `ErrorResponse` envelope: `{ status, error, message, timestamp, details? }`. The `details` field (field-level validation errors as `Record<string, string>`) is only present on validation failures; omitted otherwise (`NON_NULL`). The client normalizes this to `ApiError { status, code, message, details }`. |
 
 ## Endpoint cheat sheet
 
