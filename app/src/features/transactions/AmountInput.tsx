@@ -19,18 +19,26 @@ export interface AmountInputProps {
 function formatDisplay(amount: string): string {
   if (!amount) return "";
   try {
-    const formatted = new Big(amount).toFixed(2);
-    return formatted.replace(".", ",");
+    const normalized = new Big(amount).toFixed(2);
+    const negative = normalized.startsWith("-");
+    const absolute = negative ? normalized.slice(1) : normalized;
+    const [intPart, decPart] = absolute.split(".");
+    const withThousands = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return `${negative ? "-" : ""}${withThousands},${decPart}`;
   } catch {
     return amount;
   }
 }
 
 function normalizeInput(raw: string): string {
-  const cleaned = raw.replace(/[^\d,.-]/g, "").replace(",", ".");
-  if (!cleaned || cleaned === "-" || cleaned === ".") return "";
+  const cleaned = raw.replace(/[^\d,.-]/g, "");
+  if (!cleaned || cleaned === "-") return "";
+  const parseable = cleaned.includes(",")
+    ? cleaned.replace(/\./g, "").replace(",", ".")
+    : cleaned;
+  if (parseable === "." || parseable === "-.") return "";
   try {
-    return new Big(cleaned).toFixed(2);
+    return new Big(parseable).toFixed(2);
   } catch {
     return "";
   }

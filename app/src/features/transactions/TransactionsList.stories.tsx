@@ -1,5 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "@storybook/test";
+import { useMemo, useState } from "react";
+import { Download, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Pagination } from "@/components/app/Pagination";
 import type { TransactionResponse } from "@/lib/api/types";
 import { TransactionsList } from "./TransactionsList";
 
@@ -105,4 +109,83 @@ export const Loading: Story = {
 
 export const Empty: Story = {
   args: { transactions: [] },
+};
+
+const LARGE_SAMPLE: TransactionResponse[] = (() => {
+  const establishments = [
+    ["Starbucks", "Cafeteria", 3],
+    ["Uber", "Transporte", 2],
+    ["iFood", "Alimentação", 1],
+    ["Extra Mercado", "Mercado", 4],
+    ["Netflix", "Streaming", 7],
+    ["Academia Smart", "Saúde", 5],
+    ["Posto Shell", "Transporte", 2],
+    ["Padaria do Ze", "Alimentação", 1],
+    ["Livraria Cultura", "Lazer", 6],
+    ["Farmácia Drogasil", "Saúde", 5],
+  ] as const;
+  const amounts = ["12.90", "34.50", "89.90", "156.40", "5034.00", "24.90", "62.30", "18.70", "210.00", "79.80"];
+  const paymentMethods: Array<"credit" | "debit"> = ["credit", "debit"];
+
+  return Array.from({ length: 52 }).map((_, i) => {
+    const [establishment, category, category_id] = establishments[i % establishments.length];
+    const amount = amounts[i % amounts.length];
+    const day = 28 - Math.floor(i / 4);
+    return {
+      id: String(i + 1),
+      amount,
+      date: `2026-04-${String(day).padStart(2, "0")}`,
+      establishment,
+      description: null,
+      category_id,
+      category,
+      tax_id: null,
+      entry_type: "image" as const,
+      transaction_type: "expense" as const,
+      payment_method: paymentMethods[i % 2],
+      confidence: 0.95,
+      created_at: `2026-04-${String(day).padStart(2, "0")}T09:00:00Z`,
+    };
+  });
+})();
+
+function PaginatedStory() {
+  const [page, setPage] = useState(0);
+  const pageSize = 20;
+  const total = LARGE_SAMPLE.length;
+  const pageItems = useMemo(
+    () => LARGE_SAMPLE.slice(page * pageSize, page * pageSize + pageSize),
+    [page]
+  );
+  return (
+    <div className="space-y-6">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Transactions</h1>
+          <p className="text-muted-foreground text-sm">{total} transactions</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline">
+            <Download /> Export CSV
+          </Button>
+          <Button>
+            <Plus /> New
+          </Button>
+        </div>
+      </header>
+      <TransactionsList transactions={pageItems} onEdit={fn()} onDelete={fn()} />
+      <Pagination page={page} pageSize={pageSize} total={total} onPageChange={setPage} />
+    </div>
+  );
+}
+
+export const PageWithPagination: Story = {
+  parameters: { layout: "fullscreen" },
+  render: () => (
+    <div className="bg-background text-foreground min-h-screen w-full p-6 sm:p-10">
+      <div className="mx-auto w-full max-w-screen-2xl">
+        <PaginatedStory />
+      </div>
+    </div>
+  ),
 };
