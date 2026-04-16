@@ -8,6 +8,34 @@ React SPA web dashboard for the personal finances system. Shows transactions,
 categories, reports, and the spend dashboard. All data comes from the Java
 backend REST API at `/api/v1/*` via JWT-authenticated fetch calls.
 
+## Layout
+
+The application lives inside `app/` so the repo root stays clean for
+project-wide meta. Treat `app/` as the project root for every command and
+file path unless explicitly noted.
+
+```
+personal-finances-frontend/
+├── .github/workflows/ci.yml        # CI (all jobs run inside app/)
+├── docs/                           # Project docs (contributing, api conventions)
+├── CLAUDE.md                       # This file
+├── README.md
+├── .gitignore                      # Root ignores app/node_modules, dist, etc.
+└── app/                            # ← Vite React SPA lives here
+    ├── src/
+    ├── public/
+    ├── .storybook/
+    ├── index.html
+    ├── package.json                package-lock.json
+    ├── vite.config.ts              tsconfig.{json,app,node}.json
+    ├── eslint.config.js            postcss.config.mjs
+    ├── components.json             # shadcn
+    ├── vercel.json                 # SPA rewrite
+    ├── .env.example                # VITE_API_BASE_URL
+    ├── .prettierrc.json            .prettierignore
+    └── .npmrc
+```
+
 ## Stack
 
 - **Framework:** Vite 8 + React 19 + TypeScript (SPA, no SSR)
@@ -20,18 +48,21 @@ backend REST API at `/api/v1/*` via JWT-authenticated fetch calls.
 - **Money arithmetic:** big.js (never coerce amounts to `Number`)
 - **Testing:** Vitest 4 + Testing Library (unit / component), Playwright (e2e)
 - **Stories:** Storybook 10.3 (react-vite framework)
-- **Hosting:** Vercel
+- **Hosting:** Vercel (root directory set to `app/`)
 - **Auth:** Backend-native JWT via `POST /api/auth/login`, stored in
   `localStorage` under `pf.auth`
 
 ## Commands
 
+**Always `cd app` first** — the root has no `package.json`.
+
 ```bash
+cd app
 npm install
 cp .env.example .env.local          # set VITE_API_BASE_URL
 
 npm run dev                          # Vite dev server, port 3000
-npm run build                        # tsc -b && vite build → dist/
+npm run build                        # tsc -b && vite build → app/dist/
 npm run preview                      # vite preview on port 4173
 npm run lint                         # ESLint (flat config)
 npm run typecheck                    # tsc -b --noEmit
@@ -43,7 +74,7 @@ npm run build-storybook              # Static Storybook build
 npm run format                       # Prettier --write
 ```
 
-## Folder Structure
+## `app/src/` structure
 
 ```
 src/
@@ -102,9 +133,9 @@ colocated next to it. See `docs/CONTRIBUTING.md` for the review workflow
 
 ## Environment Variables
 
-See `.env.example`. Only one:
-
-- `VITE_API_BASE_URL` — backend base URL (default `http://localhost:8080`)
+Only one: `VITE_API_BASE_URL` (default `http://localhost:8080`). See
+`app/.env.example`. In production this is set per environment in the Vercel
+project settings.
 
 ## Git workflow
 

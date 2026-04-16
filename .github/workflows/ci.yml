@@ -11,11 +11,18 @@ on:
       - develop
       - main
 
+defaults:
+  run:
+    working-directory: app
+
 jobs:
   preflight:
     runs-on: ubuntu-latest
     outputs:
       skip: ${{ steps.check.outputs.skip }}
+    defaults:
+      run:
+        working-directory: .
     steps:
       - name: Skip push when PR already exists
         id: check
@@ -64,6 +71,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
       - run: npm run lint
 
@@ -77,6 +85,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
       - run: npm run typecheck
 
@@ -90,6 +99,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
       - run: npm run test
 
@@ -105,6 +115,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
       - run: npm run build
 
@@ -118,6 +129,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: app/package-lock.json
       - run: npm ci
       - run: npm run build-storybook
 
@@ -132,6 +144,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    defaults:
+      run:
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
       - name: Open PR
