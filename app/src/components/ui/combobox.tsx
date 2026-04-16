@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -84,14 +84,12 @@ export function Combobox<T extends string | number = string | number>({
                   <CommandItem
                     key={String(option.value)}
                     value={option.label}
+                    data-checked={isSelected ? "true" : undefined}
                     onSelect={() => {
                       onChange(isSelected ? null : option.value);
                       setOpen(false);
                     }}
                   >
-                    <Check
-                      className={cn("mr-2", isSelected ? "opacity-100" : "opacity-0")}
-                    />
                     <span className="flex-1 truncate">{option.label}</span>
                     {option.description ? (
                       <span className="text-muted-foreground ml-2 text-xs">
