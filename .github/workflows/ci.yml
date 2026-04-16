@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'fix/**'
+      - 'chore/**'
+      - 'refactor/**'
+      - 'docs/**'
+      - 'test/**'
+      - 'perf/**'
       - develop
       - main
   pull_request:
@@ -40,7 +46,7 @@ jobs:
 
           BRANCH="${{ github.ref_name }}"
 
-          if echo "$BRANCH" | grep -q "^feature/"; then
+          if echo "$BRANCH" | grep -qE "^(feature|fix|chore|refactor|docs|test|perf)/"; then
             BASE="develop"
           elif [ "$BRANCH" = "develop" ]; then
             BASE="main"
@@ -138,6 +144,12 @@ jobs:
     if: |
       github.event_name == 'push' && (
         startsWith(github.ref_name, 'feature/') ||
+        startsWith(github.ref_name, 'fix/') ||
+        startsWith(github.ref_name, 'chore/') ||
+        startsWith(github.ref_name, 'refactor/') ||
+        startsWith(github.ref_name, 'docs/') ||
+        startsWith(github.ref_name, 'test/') ||
+        startsWith(github.ref_name, 'perf/') ||
         github.ref_name == 'develop'
       )
     runs-on: ubuntu-latest
@@ -155,9 +167,9 @@ jobs:
         run: |
           BRANCH="${{ github.ref_name }}"
 
-          if echo "$BRANCH" | grep -q "^feature/"; then
+          if echo "$BRANCH" | grep -qE "^(feature|fix|chore|refactor|docs|test|perf)/"; then
             BASE="develop"
-            TITLE="${BRANCH#feature/}"
+            TITLE="$BRANCH"
           else
             BASE="main"
             TITLE="Release: develop → main"
