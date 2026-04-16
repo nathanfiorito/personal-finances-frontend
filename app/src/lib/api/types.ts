@@ -88,7 +88,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  expiresIn: number;
+  expires_in: number;
 }
 
 export class ApiError extends Error {

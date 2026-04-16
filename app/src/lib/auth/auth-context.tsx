@@ -79,7 +79,7 @@ export function AuthProvider({
         );
         const value: StoredToken = {
           token: response.token,
-          expires_at: computeExpiresAt(response.expiresIn),
+          expires_at: computeExpiresAt(response.expires_in),
         };
         tokenStorage.write(value);
         setStored(value);
