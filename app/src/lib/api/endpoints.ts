@@ -20,4 +20,13 @@ export const endpoints = {
   bff: {
     transactions: "/api/v1/bff/transactions",
   },
+  cards: {
+    list: "/api/v1/cards",
+    byId: (id: number) => `/api/v1/cards/${id}`,
+    invoiceCurrent: (id: number) => `/api/v1/cards/${id}/invoices/current`,
+    invoiceByMonth: (id: number, year: number, month: number) => `/api/v1/cards/${id}/invoices/${year}/${month}`,
+    invoiceTimeline: (id: number) => `/api/v1/cards/${id}/invoices/timeline`,
+    invoicePrediction: (id: number) => `/api/v1/cards/${id}/invoices/prediction`,
+    invoicePredictionRefresh: (id: number) => `/api/v1/cards/${id}/invoices/prediction/refresh`,
+  },
 } as const;
