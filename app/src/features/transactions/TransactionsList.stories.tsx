@@ -3,7 +3,7 @@ import { fn } from "@storybook/test";
 import { useMemo, useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Pagination } from "@/components/app/Pagination";
+import { Pagination } from "@/components/ui/pagination";
 import type { TransactionResponse } from "@/lib/api/types";
 import { TransactionsList } from "./TransactionsList";
 

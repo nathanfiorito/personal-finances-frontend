@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { DatePicker } from "@/components/app/DatePicker";
+import { DatePicker } from "@/components/ui/date-picker";
 import type {
   CategoryResponse,
   TransactionCreateRequest,

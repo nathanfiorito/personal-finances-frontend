@@ -27,7 +27,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Pagination } from "@/components/app/Pagination";
+import { Pagination } from "@/components/ui/pagination";
 import { Toaster } from "@/components/ui/sonner";
 import { useCategories } from "@/features/categories/use-categories";
 import { rangeForPreset } from "@/features/dashboard/period";

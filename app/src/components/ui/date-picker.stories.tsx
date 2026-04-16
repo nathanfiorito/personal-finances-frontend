@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { DatePicker } from "./DatePicker";
+import { DatePicker } from "./date-picker";
 
 const meta: Meta<typeof DatePicker> = {
-  title: "App/DatePicker",
+  title: "UI/DatePicker",
   component: DatePicker,
   parameters: { layout: "centered" },
   tags: ["autodocs"],

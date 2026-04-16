@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { Pagination } from "./Pagination";
+import { Pagination } from "./pagination";
 
 const meta: Meta<typeof Pagination> = {
-  title: "App/Pagination",
+  title: "UI/Pagination",
   component: Pagination,
   parameters: { layout: "padded" },
   tags: ["autodocs"],
