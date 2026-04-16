@@ -9,6 +9,7 @@ const validBase = {
   date: "2026-04-14",
   establishment: "",
   description: "",
+  card_id: 1,
 };
 
 describe("transactionFormSchema", () => {
