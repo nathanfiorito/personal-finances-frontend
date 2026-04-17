@@ -13,6 +13,7 @@ function makeApi(get: ReturnType<typeof vi.fn>): ApiClient {
     put: vi.fn() as unknown as ApiClient["put"],
     patch: vi.fn() as unknown as ApiClient["patch"],
     del: vi.fn() as unknown as ApiClient["del"],
+    postMultipart: vi.fn() as unknown as ApiClient["postMultipart"],
   };
 }
 

@@ -29,4 +29,8 @@ export const endpoints = {
     invoicePrediction: (id: number) => `/api/v1/cards/${id}/invoices/prediction`,
     invoicePredictionRefresh: (id: number) => `/api/v1/cards/${id}/invoices/prediction/refresh`,
   },
+  invoiceImport: {
+    preview: "/api/v1/invoices/import/preview",
+    commit: "/api/v1/invoices/import",
+  },
 } as const;

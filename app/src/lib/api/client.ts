@@ -25,6 +25,7 @@ export interface ApiClient {
   put<T = unknown>(path: string, body?: unknown, opts?: RequestOptions): Promise<T>;
   patch<T = unknown>(path: string, body?: unknown, opts?: RequestOptions): Promise<T>;
   del<T = unknown>(path: string, opts?: RequestOptions): Promise<T>;
+  postMultipart<T = unknown>(path: string, formData: FormData, opts?: RequestOptions): Promise<T>;
 }
 
 function buildUrl(baseUrl: string, path: string, query?: QueryParams): string {
@@ -124,11 +125,59 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     return (text ? JSON.parse(text) : undefined) as T;
   }
 
+  async function requestMultipart<T>(
+    path: string,
+    formData: FormData,
+    opts: RequestOptions = {}
+  ): Promise<T> {
+    const url = buildUrl(config.baseUrl, path, opts.query);
+
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+      ...opts.headers,
+    };
+
+    const token = config.getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Do NOT set Content-Type — the browser sets it with the correct boundary.
+
+    const response = await fetchImpl(url, {
+      method: "POST",
+      headers,
+      body: formData,
+      signal: opts.signal,
+    });
+
+    if (response.status === 401) {
+      config.onUnauthorized?.();
+    }
+
+    if (!response.ok) {
+      const { message, code, details } = await parseErrorBody(response);
+      throw new ApiError({ status: response.status, message, code, details });
+    }
+
+    const expect = opts.expect ?? "json";
+    if (expect === "void" || response.status === 204) {
+      return undefined as T;
+    }
+    if (expect === "blob") {
+      return (await response.blob()) as T;
+    }
+
+    const text = await response.text();
+    return (text ? JSON.parse(text) : undefined) as T;
+  }
+
   return {
     get: (path, opts) => request("GET", path, undefined, opts),
     post: (path, body, opts) => request("POST", path, body, opts),
     put: (path, body, opts) => request("PUT", path, body, opts),
     patch: (path, body, opts) => request("PATCH", path, body, opts),
     del: (path, opts) => request("DELETE", path, undefined, opts),
+    postMultipart: (path, formData, opts) => requestMultipart(path, formData, opts),
   };
 }
