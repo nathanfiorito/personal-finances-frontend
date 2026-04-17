@@ -193,6 +193,23 @@ describe("reducer — PREVIEW_OK", () => {
     if (next.kind !== "preview") throw new Error("expected preview");
     expect(next.selectedCardId).toBeNull();
   });
+
+  it("orders rows by date ascending regardless of incoming order", () => {
+    const action: ImportPageAction = {
+      type: "PREVIEW_OK",
+      fileName: "fatura.pdf",
+      detectedCard: CARD_DETECTED,
+      // Intentionally shuffled: NO_CATEGORY (2026-03-17), NORMAL (2026-03-15), DUPLICATE (2026-03-16)
+      items: [ITEM_NO_CATEGORY, ITEM_NORMAL, ITEM_DUPLICATE],
+    };
+    const next = reducer(initialState, action);
+    if (next.kind !== "preview") throw new Error("expected preview");
+    expect(next.rows.map((r) => r.date)).toEqual([
+      "2026-03-15",
+      "2026-03-16",
+      "2026-03-17",
+    ]);
+  });
 });
 
 // ---------------------------------------------------------------------------
