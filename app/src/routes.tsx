@@ -9,6 +9,7 @@ import CardsPage from "@/pages/CardsPage";
 import CategoriesPage from "@/pages/CategoriesPage";
 import ReportsPage from "@/pages/ReportsPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import { InvoiceImportPage } from "@/pages/InvoiceImportPage";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
           { path: "cards", element: <CardsPage /> },
           { path: "categories", element: <CategoriesPage /> },
           { path: "reports", element: <ReportsPage /> },
+          { path: "invoices/import", element: <InvoiceImportPage /> },
         ],
       },
     ],
