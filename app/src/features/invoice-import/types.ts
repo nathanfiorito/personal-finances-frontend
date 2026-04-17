@@ -37,3 +37,28 @@ export interface InvoicePreviewCardOption {
   bank: string;
   last_four_digits: string;
 }
+
+export interface InvoiceImportPreviewResponse {
+  source_file_name: string;
+  detected_card: InvoicePreviewDetectedCard;
+  items: InvoicePreviewItem[];
+}
+
+export interface InvoiceImportCommitItem {
+  date: string;
+  establishment: string;
+  description: string | null;
+  amount: string;
+  category_id: number;
+}
+
+export interface InvoiceImportCommitRequest {
+  card_id: number;
+  items: InvoiceImportCommitItem[];
+}
+
+export interface InvoiceImportCommitResponse {
+  imported_count: number;
+  card_id: number;
+  transaction_ids: string[];
+}
