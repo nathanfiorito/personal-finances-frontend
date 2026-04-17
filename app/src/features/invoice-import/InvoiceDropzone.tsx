@@ -3,8 +3,9 @@ import { AlertCircle, Loader2, Upload } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import type { InvoiceDropzoneStatus } from "./types";
 
-export type InvoiceDropzoneStatus = "idle" | "uploading" | "error";
+export type { InvoiceDropzoneStatus };
 
 export interface InvoiceDropzoneProps {
   status: InvoiceDropzoneStatus;
