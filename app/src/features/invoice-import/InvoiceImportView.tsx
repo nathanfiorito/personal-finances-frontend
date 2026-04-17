@@ -71,6 +71,12 @@ export function InvoiceImportView({
               dispatch({ type: "CHANGE_CATEGORY", tempId, categoryId })
             }
             onChangeCard={(cardId) => dispatch({ type: "CHANGE_CARD", cardId })}
+            onChangeDate={(tempId, date) =>
+              dispatch({ type: "CHANGE_DATE", tempId, date })
+            }
+            onChangeAmount={(tempId, amount) =>
+              dispatch({ type: "CHANGE_AMOUNT", tempId, amount })
+            }
           />
           <div className="flex justify-end gap-2">
             <Button

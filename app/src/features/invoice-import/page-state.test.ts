@@ -374,6 +374,86 @@ describe("reducer — RESET", () => {
 });
 
 // ---------------------------------------------------------------------------
+// reducer — CHANGE_DATE
+// ---------------------------------------------------------------------------
+
+describe("reducer — CHANGE_DATE", () => {
+  it("updates the date of the target row only", () => {
+    const state = makePreviewState({
+      rows: [
+        { ...ITEM_NORMAL, included: true, selected_category_id: 1 },
+        { ...ITEM_DUPLICATE, included: true, selected_category_id: 2 },
+      ],
+    });
+    const next = reducer(state, { type: "CHANGE_DATE", tempId: "t1", date: "2026-03-20" });
+    if (next.kind !== "preview") throw new Error("expected preview");
+    const t1 = next.rows.find((r) => r.temp_id === "t1");
+    const t2 = next.rows.find((r) => r.temp_id === "t2");
+    expect(t1?.date).toBe("2026-03-20");
+    expect(t2?.date).toBe("2026-03-16"); // unchanged
+  });
+
+  it("re-sorts rows ascending by date after the change", () => {
+    // t1=2026-03-15, t2=2026-03-16 initially; change t2 to 2026-03-10 → t2 first
+    const state = makePreviewState({
+      rows: [
+        { ...ITEM_NORMAL, included: true, selected_category_id: 1 },   // t1, 2026-03-15
+        { ...ITEM_DUPLICATE, included: true, selected_category_id: 2 }, // t2, 2026-03-16
+      ],
+    });
+    const next = reducer(state, { type: "CHANGE_DATE", tempId: "t2", date: "2026-03-10" });
+    if (next.kind !== "preview") throw new Error("expected preview");
+    expect(next.rows.map((r) => r.temp_id)).toEqual(["t2", "t1"]);
+    expect(next.rows.map((r) => r.date)).toEqual(["2026-03-10", "2026-03-15"]);
+  });
+
+  it("returns state unchanged when not in preview", () => {
+    const state: ImportPageState = { kind: "idle" };
+    const next = reducer(state, { type: "CHANGE_DATE", tempId: "t1", date: "2026-03-20" });
+    expect(next).toBe(state);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// reducer — CHANGE_AMOUNT
+// ---------------------------------------------------------------------------
+
+describe("reducer — CHANGE_AMOUNT", () => {
+  it("updates the amount of the target row only", () => {
+    const state = makePreviewState({
+      rows: [
+        { ...ITEM_NORMAL, included: true, selected_category_id: 1 },
+        { ...ITEM_DUPLICATE, included: true, selected_category_id: 2 },
+      ],
+    });
+    const next = reducer(state, { type: "CHANGE_AMOUNT", tempId: "t1", amount: "99.99" });
+    if (next.kind !== "preview") throw new Error("expected preview");
+    const t1 = next.rows.find((r) => r.temp_id === "t1");
+    const t2 = next.rows.find((r) => r.temp_id === "t2");
+    expect(t1?.amount).toBe("99.99");
+    expect(t2?.amount).toBe("22.00"); // unchanged
+  });
+
+  it("does not reorder rows after an amount change", () => {
+    const state = makePreviewState({
+      rows: [
+        { ...ITEM_NORMAL, included: true, selected_category_id: 1 },   // t1, 2026-03-15
+        { ...ITEM_DUPLICATE, included: true, selected_category_id: 2 }, // t2, 2026-03-16
+      ],
+    });
+    const next = reducer(state, { type: "CHANGE_AMOUNT", tempId: "t1", amount: "500.00" });
+    if (next.kind !== "preview") throw new Error("expected preview");
+    expect(next.rows.map((r) => r.temp_id)).toEqual(["t1", "t2"]);
+  });
+
+  it("returns state unchanged when not in preview", () => {
+    const state: ImportPageState = { kind: "importing" };
+    const next = reducer(state, { type: "CHANGE_AMOUNT", tempId: "t1", amount: "50.00" });
+    expect(next).toBe(state);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // canSubmit
 // ---------------------------------------------------------------------------
 
