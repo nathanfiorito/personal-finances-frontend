@@ -26,6 +26,8 @@ const meta: Meta<typeof InvoicePreviewTable> = {
     onToggleInclude: fn(),
     onChangeCategory: fn(),
     onChangeCard: fn(),
+    onChangeDate: fn(),
+    onChangeAmount: fn(),
   },
 };
 
