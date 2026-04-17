@@ -1,6 +1,7 @@
 import { formatMoney, sumAmounts } from "@/lib/format/format-money";
-import { formatDate } from "@/lib/format/format-date";
 import { Badge } from "@/components/ui/badge";
+import { DatePicker } from "@/components/ui/date-picker";
+import { AmountInput } from "@/features/transactions/AmountInput";
 import {
   Table,
   TableBody,
@@ -38,6 +39,8 @@ export interface InvoicePreviewTableProps {
   onToggleInclude: (tempId: string) => void;
   onChangeCategory: (tempId: string, categoryId: number) => void;
   onChangeCard: (cardId: number) => void;
+  onChangeDate: (tempId: string, date: string) => void;
+  onChangeAmount: (tempId: string, amount: string) => void;
 }
 
 function formatCardLabel(card: InvoicePreviewCardOption): string {
@@ -60,6 +63,8 @@ export function InvoicePreviewTable({
   onToggleInclude,
   onChangeCategory,
   onChangeCard,
+  onChangeDate,
+  onChangeAmount,
 }: InvoicePreviewTableProps) {
   const includedRows = rows.filter((r) => r.included);
   const duplicateCount = rows.filter((r) => r.is_possible_duplicate).length;
@@ -175,7 +180,11 @@ export function InvoicePreviewTable({
 
                   {/* Date */}
                   <TableCell className="whitespace-nowrap">
-                    {formatDate(row.date)}
+                    <DatePicker
+                      value={row.date}
+                      onChange={(next) => onChangeDate(row.temp_id, next)}
+                      id={`date-picker-${row.temp_id}`}
+                    />
                   </TableCell>
 
                   {/* Establishment */}
@@ -189,8 +198,13 @@ export function InvoicePreviewTable({
                   </TableCell>
 
                   {/* Amount */}
-                  <TableCell className="text-right font-mono">
-                    {formatMoney(row.amount)}
+                  <TableCell className="text-right">
+                    <AmountInput
+                      value={row.amount}
+                      onChange={(next) => onChangeAmount(row.temp_id, next)}
+                      id={`amount-input-${row.temp_id}`}
+                      className="w-28 text-right"
+                    />
                   </TableCell>
 
                   {/* Category select */}

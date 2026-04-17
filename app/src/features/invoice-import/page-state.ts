@@ -30,12 +30,18 @@ export type ImportPageAction =
   | { type: "TOGGLE_INCLUDE"; tempId: string }
   | { type: "CHANGE_CATEGORY"; tempId: string; categoryId: number }
   | { type: "CHANGE_CARD"; cardId: number }
+  | { type: "CHANGE_DATE"; tempId: string; date: string } // ISO YYYY-MM-DD
+  | { type: "CHANGE_AMOUNT"; tempId: string; amount: string } // decimal string
   | { type: "IMPORT_START" }
   | { type: "IMPORT_OK"; importedCount: number }
   | { type: "IMPORT_FAIL"; message: string }
   | { type: "RESET" };
 
 export const initialState: ImportPageState = { kind: "idle" };
+
+function sortRowsByDate(rows: InvoicePreviewTableRow[]): InvoicePreviewTableRow[] {
+  return [...rows].sort((a, b) => a.date.localeCompare(b.date));
+}
 
 export function reducer(
   state: ImportPageState,
@@ -51,13 +57,13 @@ export function reducer(
         fileName: action.fileName,
         detectedCard: action.detectedCard,
         selectedCardId: action.detectedCard.matched_card_id,
-        rows: [...action.items]
-          .sort((a, b) => a.date.localeCompare(b.date))
-          .map((i) => ({
+        rows: sortRowsByDate(
+          action.items.map((i) => ({
             ...i,
             included: !i.is_possible_duplicate,
             selected_category_id: i.suggested_category_id,
           })),
+        ),
       };
 
     case "PREVIEW_FAIL":
@@ -86,6 +92,26 @@ export function reducer(
     case "CHANGE_CARD":
       if (state.kind !== "preview") return state;
       return { ...state, selectedCardId: action.cardId };
+
+    case "CHANGE_DATE":
+      if (state.kind !== "preview") return state;
+      return {
+        ...state,
+        rows: sortRowsByDate(
+          state.rows.map((r) =>
+            r.temp_id === action.tempId ? { ...r, date: action.date } : r,
+          ),
+        ),
+      };
+
+    case "CHANGE_AMOUNT":
+      if (state.kind !== "preview") return state;
+      return {
+        ...state,
+        rows: state.rows.map((r) =>
+          r.temp_id === action.tempId ? { ...r, amount: action.amount } : r,
+        ),
+      };
 
     case "IMPORT_START":
       return { kind: "importing" };

@@ -64,6 +64,8 @@ function defaultProps() {
     onToggleInclude: vi.fn(),
     onChangeCategory: vi.fn(),
     onChangeCard: vi.fn(),
+    onChangeDate: vi.fn(),
+    onChangeAmount: vi.fn(),
   };
 }
 
@@ -326,12 +328,80 @@ describe("InvoicePreviewTable", () => {
   });
 
   describe("money formatting", () => {
-    it("formats amount with BRL symbol and pt-BR decimal separator", () => {
+    it("formats amount with pt-BR decimal separator in the AmountInput", () => {
       const row = makeRow({ amount: "1234.56", temp_id: "money-test" });
       render(<InvoicePreviewTable {...defaultProps()} rows={[row]} />);
-      const tableRow = screen.getByTestId("row-money-test");
-      // The amount cell renders as font-mono; check that the row has the formatted value
-      expect(tableRow).toHaveTextContent("1.234,56");
+      const input = document.getElementById("amount-input-money-test") as HTMLInputElement;
+      // AmountInput renders the display value (formatted) as the input value
+      expect(input).toHaveDisplayValue("1.234,56");
+    });
+  });
+
+  describe("onChangeDate interactions", () => {
+    it("renders a date picker button with the formatted date for each row", () => {
+      const row = makeRow({ date: "2026-03-15", temp_id: "date-test" });
+      render(<InvoicePreviewTable {...defaultProps()} rows={[row]} />);
+      // DatePicker renders a button showing the date in dd/MM/yyyy format
+      expect(screen.getByText("15/03/2026")).toBeInTheDocument();
+    });
+
+    it("calls onChangeDate with tempId and ISO date when a new date is selected", async () => {
+      const user = userEvent.setup();
+      const onChangeDate = vi.fn();
+      // Use a date where day 20 exists and the calendar will show it
+      const row = makeRow({ date: "2026-03-15", temp_id: "date-pick-test" });
+
+      render(
+        <InvoicePreviewTable
+          {...defaultProps()}
+          rows={[row]}
+          onChangeDate={onChangeDate}
+        />
+      );
+
+      // Open the DatePicker popover (the trigger button has id="date-picker-<tempId>")
+      const trigger = document.getElementById("date-picker-date-pick-test")!;
+      await user.click(trigger);
+
+      // Find calendar day buttons by their data-day attribute (set by CalendarDayButton)
+      // They are in the popover; pick the first one to keep the test simple
+      const dayButtons = await screen.findAllByRole("button");
+      const calendarDayButton = dayButtons.find((btn) => btn.hasAttribute("data-day"));
+      expect(calendarDayButton).toBeDefined();
+      await user.click(calendarDayButton!);
+
+      expect(onChangeDate).toHaveBeenCalledOnce();
+      const [calledTempId, calledDate] = onChangeDate.mock.calls[0] as [string, string];
+      expect(calledTempId).toBe("date-pick-test");
+      // Should be ISO YYYY-MM-DD format
+      expect(calledDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+  });
+
+  describe("onChangeAmount interactions", () => {
+    it("calls onChangeAmount with tempId and decimal string when the amount is edited", async () => {
+      const user = userEvent.setup();
+      const onChangeAmount = vi.fn();
+      const row = makeRow({ amount: "62.30", temp_id: "amount-edit-test" });
+
+      render(
+        <InvoicePreviewTable
+          {...defaultProps()}
+          rows={[row]}
+          onChangeAmount={onChangeAmount}
+        />
+      );
+
+      const input = document.getElementById("amount-input-amount-edit-test") as HTMLInputElement;
+      await user.clear(input);
+      await user.type(input, "150,00");
+      await user.tab(); // trigger blur to normalize
+
+      // AmountInput calls onChange on blur with the normalized decimal string
+      const lastCall = onChangeAmount.mock.calls.at(-1) as [string, string] | undefined;
+      expect(lastCall).toBeDefined();
+      expect(lastCall![0]).toBe("amount-edit-test");
+      expect(lastCall![1]).toBe("150.00");
     });
   });
 });
