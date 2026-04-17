@@ -51,11 +51,13 @@ export function reducer(
         fileName: action.fileName,
         detectedCard: action.detectedCard,
         selectedCardId: action.detectedCard.matched_card_id,
-        rows: action.items.map((i) => ({
-          ...i,
-          included: !i.is_possible_duplicate,
-          selected_category_id: i.suggested_category_id,
-        })),
+        rows: [...action.items]
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .map((i) => ({
+            ...i,
+            included: !i.is_possible_duplicate,
+            selected_category_id: i.suggested_category_id,
+          })),
       };
 
     case "PREVIEW_FAIL":
