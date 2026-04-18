@@ -1,7 +1,8 @@
 # personal-finances-frontend
 
 React SPA for the Personal Finances project. Dashboard, transactions,
-categories, and reports, all pulling from the Java backend REST API.
+categories, reports, credit cards, and invoice import — all pulling from
+the Java backend REST API.
 
 The application source lives inside [`app/`](./app) so the repo root stays
 clean for meta files (CI, docs, readme). Run every npm command from inside
